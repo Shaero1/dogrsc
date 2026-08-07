@@ -6,31 +6,56 @@ import {
   uploadFoundReportMedia,
 } from '@/lib/reports-api';
 
-export async function submitFoundReport(formData: FormData, locale: string) {
-  const reporterName = String(formData.get('reporterName') ?? '').trim();
-  const reporterPhone = String(formData.get('reporterPhone') ?? '').trim();
-  const reporterEmailRaw = String(formData.get('reporterEmail') ?? '').trim();
-  const description = String(formData.get('description') ?? '').trim();
-  const captchaToken = String(formData.get('captchaToken') ?? '').trim();
-  const latitudeRaw = formData.get('latitude');
-  const longitudeRaw = formData.get('longitude');
+export type SubmitReportResult = { error: string } | undefined;
 
-  const payload = {
-    reporterName,
-    reporterPhone,
-    description,
-    captchaToken,
-    ...(reporterEmailRaw ? { reporterEmail: reporterEmailRaw } : {}),
-    ...(latitudeRaw ? { latitude: Number(latitudeRaw) } : {}),
-    ...(longitudeRaw ? { longitude: Number(longitudeRaw) } : {}),
-  };
+function isNextRedirect(err: unknown): boolean {
+  return (
+    typeof err === 'object' &&
+    err !== null &&
+    'digest' in err &&
+    typeof (err as { digest?: string }).digest === 'string' &&
+    (err as { digest: string }).digest.startsWith('NEXT_REDIRECT')
+  );
+}
 
-  const report = await createFoundReport(payload);
+export async function submitFoundReport(
+  formData: FormData,
+  locale: string,
+): Promise<SubmitReportResult> {
+  try {
+    const reporterName = String(formData.get('reporterName') ?? '').trim();
+    const reporterPhone = String(formData.get('reporterPhone') ?? '').trim();
+    const reporterEmailRaw = String(formData.get('reporterEmail') ?? '').trim();
+    const description = String(formData.get('description') ?? '').trim();
+    const captchaToken = String(formData.get('captchaToken') ?? '').trim();
+    const latitudeRaw = formData.get('latitude');
+    const longitudeRaw = formData.get('longitude');
 
-  const photo = formData.get('photo');
-  if (photo instanceof File && photo.size > 0) {
-    await uploadFoundReportMedia(report.id, photo);
+    const payload = {
+      reporterName,
+      reporterPhone,
+      description,
+      captchaToken,
+      ...(reporterEmailRaw ? { reporterEmail: reporterEmailRaw } : {}),
+      ...(latitudeRaw ? { latitude: Number(latitudeRaw) } : {}),
+      ...(longitudeRaw ? { longitude: Number(longitudeRaw) } : {}),
+    };
+
+    const report = await createFoundReport(payload);
+
+    const photo = formData.get('photo');
+    if (photo instanceof File && photo.size > 0) {
+      await uploadFoundReportMedia(report.id, photo);
+    }
+
+    redirect(`/${locale}/found-dog/thank-you`);
+  } catch (err) {
+    if (isNextRedirect(err)) {
+      throw err;
+    }
+
+    return {
+      error: err instanceof Error ? err.message : 'Submit failed',
+    };
   }
-
-  redirect(`/${locale}/found-dog/thank-you`);
 }

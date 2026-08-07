@@ -7,7 +7,10 @@ export function LostDogFormClient({ locale }: { locale: string }) {
   return (
     <ReportForm
       onSubmit={async (formData) => {
-        await submitLostReport(formData, locale);
+        const result = await submitLostReport(formData, locale);
+        if (result?.error) {
+          throw new Error(result.error);
+        }
       }}
     />
   );

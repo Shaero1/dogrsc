@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DATABASE_URL: postgresql://dogrsc:dogrsc@localhost:5432/dogrsc
+  REDIS_URL: redis://localhost:6379
+  S3_ENDPOINT: http://localhost:9000
+  S3_ACCESS_KEY: dogrsc_minio
+  S3_SECRET_KEY: dogrsc_minio_secret
+  S3_BUCKET: dogrsc-media
+  S3_REGION: us-east-1
+  JWT_SECRET: ci-jwt-secret-change-me
+  JWT_EXPIRES_IN: 8h
+  ADMIN_EMAIL: admin@dogerescue.org
+  ADMIN_PASSWORD: changeme-dev-only
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build workspaces
+        run: npm run build
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint frontend and admin
+        run: npm run lint
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Start infra services
+        working-directory: infra
+        run: |
+          docker compose -f docker-compose.dev.yml up -d
+          docker compose -f docker-compose.dev.yml up -d --wait postgres redis minio
+
+      - name: Apply migrations
+        run: npm run db:migrate:deploy -w dogrsc-backend
+
+      - name: Run backend e2e tests
+        run: npm run test:e2e -w dogrsc-backend
+
+      - name: Stop infra services
+        if: always()
+        working-directory: infra
+        run: docker compose -f docker-compose.dev.yml down

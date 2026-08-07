@@ -1,0 +1,186 @@
+// Doge Rescue — MVP schema (init_mvp)
+// descriptions JSON: { en?: { description?, rescueStory? }, th?: {...}, ru?: {...} }
+// seo JSON: { title?: { en?, th?, ru? }, description?: { en?, th?, ru? } }
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  STAFF
+  USER
+}
+
+enum DogStatus {
+  AVAILABLE
+  ADOPTED
+  IN_CARE
+  ARCHIVED
+}
+
+enum ReportStatus {
+  ACTIVE
+  HIDDEN
+  VERIFIED
+}
+
+enum DonationStatus {
+  PENDING
+  CONFIRMED
+  FAILED
+}
+
+enum PaymentMethod {
+  BANK
+  CRYPTO
+}
+
+model User {
+  id           String     @id @default(uuid()) @db.Uuid
+  email        String     @unique
+  passwordHash String     @map("password_hash")
+  role         UserRole   @default(USER)
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+  auditLogs    AuditLog[]
+  mediaUploads Media[]
+
+  @@map("users")
+}
+
+model Dog {
+  id           String    @id @default(uuid()) @db.Uuid
+  slug         String    @unique
+  status       DogStatus @default(IN_CARE)
+  isPublished  Boolean   @default(false) @map("is_published")
+  descriptions Json
+  seo          Json      @default("{}")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  stories      Story[]
+
+  @@index([isPublished, status])
+  @@map("dogs")
+}
+
+model Story {
+  id          String    @id @default(uuid()) @db.Uuid
+  slug        String    @unique
+  isPublished Boolean   @default(false) @map("is_published")
+  publishedAt DateTime? @map("published_at")
+  dogId       String?   @map("dog_id") @db.Uuid
+  content     Json
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  dog         Dog?      @relation(fields: [dogId], references: [id], onDelete: SetNull)
+
+  @@index([isPublished, publishedAt(sort: Desc)])
+  @@map("stories")
+}
+
+model FoundReport {
+  id            String       @id @default(uuid()) @db.Uuid
+  reporterName  String       @map("reporter_name")
+  reporterPhone String       @map("reporter_phone")
+  reporterEmail String?      @map("reporter_email")
+  description   String
+  latitude      Decimal?     @db.Decimal(10, 7)
+  longitude     Decimal?     @db.Decimal(10, 7)
+  status        ReportStatus @default(ACTIVE)
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+
+  @@index([status, createdAt])
+  @@map("found_reports")
+}
+
+model LostReport {
+  id            String       @id @default(uuid()) @db.Uuid
+  reporterName  String       @map("reporter_name")
+  reporterPhone String       @map("reporter_phone")
+  reporterEmail String?      @map("reporter_email")
+  description   String
+  latitude      Decimal?     @db.Decimal(10, 7)
+  longitude     Decimal?     @db.Decimal(10, 7)
+  status        ReportStatus @default(ACTIVE)
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+
+  @@index([status, createdAt])
+  @@map("lost_reports")
+}
+
+model Donation {
+  id            String          @id @default(uuid()) @db.Uuid
+  amount        Decimal         @db.Decimal(12, 2)
+  currency      String          @default("THB")
+  status        DonationStatus  @default(PENDING)
+  paymentMethod PaymentMethod?  @map("payment_method")
+  donorName     String?         @map("donor_name")
+  donorEmail    String?         @map("donor_email")
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+
+  @@map("donations")
+}
+
+model CryptoAddress {
+  id           String   @id @default(uuid()) @db.Uuid
+  currencyCode String   @map("currency_code") @db.VarChar(16)
+  label        String?  @db.VarChar(64)
+  address      String
+  isActive     Boolean  @default(false) @map("is_active")
+  isDisplayed  Boolean  @default(false) @map("is_displayed")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@index([currencyCode, isActive])
+  @@map("crypto_addresses")
+}
+
+model Media {
+  id           String    @id @default(uuid()) @db.Uuid
+  s3Key        String    @map("s3_key")
+  mimeType     String    @map("mime_type")
+  sizeBytes    Int       @map("size_bytes")
+  entityType   String?   @map("entity_type")
+  entityId     String?   @map("entity_id")
+  uploadedById String    @map("uploaded_by_id") @db.Uuid
+  deletedAt    DateTime? @map("deleted_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  uploadedBy   User      @relation(fields: [uploadedById], references: [id], onDelete: Restrict)
+
+  @@index([deletedAt])
+  @@map("media")
+}
+
+model ContentTranslation {
+  id         String @id @default(uuid()) @db.Uuid
+  entityType String @map("entity_type")
+  entityId   String @map("entity_id")
+  locale     String
+  field      String
+  value      String @db.Text
+
+  @@unique([entityType, entityId, locale, field])
+  @@map("content_translations")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  userId     String?  @map("user_id") @db.Uuid
+  action     String
+  entityType String?  @map("entity_type")
+  entityId   String?  @map("entity_id")
+  payload    Json?
+  createdAt  DateTime @default(now()) @map("created_at")
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("audit_logs")
+}

@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+.next/
+out/
+build/
+coverage/
+
+# Environment
+.env
+.env.local
+.env.*.local
+infra/.env
+infra/.env.staging
+
+# Local temp / scratch
+tmp-*
+
+# Logs & debug
+*.log
+npm-debug.log*
+
+# OS & IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# TypeScript
+*.tsbuildinfo
+
+# NestJS
+dist/
+
+# Next.js
+next-env.d.ts

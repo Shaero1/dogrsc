@@ -1,0 +1,30 @@
+{
+  "name": "dogrsc",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend",
+    "admin"
+  ],
+  "scripts": {
+    "dev": "npm run dev:prepare && npm run dev:apps",
+    "dev:prepare": "node scripts/dev-prepare.mjs",
+    "dev:apps": "concurrently -n backend,frontend,admin -c blue,green,magenta \"npm run dev:backend\" \"npm run dev:frontend\" \"npm run dev:admin\"",
+    "dev:infra:up": "docker compose -f infra/docker-compose.dev.yml up -d && docker compose -f infra/docker-compose.dev.yml up -d --wait postgres redis minio",
+    "dev:infra:down": "docker compose -f infra/docker-compose.dev.yml down",
+    "dev:backend": "npm run start:dev -w dogrsc-backend",
+    "dev:frontend": "npm run dev -w dogrsc-frontend",
+    "dev:admin": "npm run dev -w dogrsc-admin",
+    "staging:up": "docker compose -f infra/docker-compose.staging.yml up --build -d",
+    "staging:down": "docker compose -f infra/docker-compose.staging.yml down",
+    "build:backend": "npm run build -w dogrsc-backend",
+    "build:frontend": "npm run build -w dogrsc-frontend",
+    "build:admin": "npm run build -w dogrsc-admin",
+    "build": "npm run build:backend && npm run build:frontend && npm run build:admin",
+    "lint": "npm run lint -w dogrsc-frontend && npm run lint -w dogrsc-admin",
+    "test:e2e": "npm run test:e2e -w dogrsc-backend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

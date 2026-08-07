@@ -1,0 +1,229 @@
+{
+  "site": {
+    "name": "Dog Rescue",
+    "tagline": "We rescue, heal, and find homes for dogs on the street"
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "stories": "Stories",
+    "dogs": "Our Dogs",
+    "found": "Found a Dog",
+    "lost": "Lost a Dog",
+    "map": "Map",
+    "donate": "Donate",
+    "contact": "Contact",
+    "faq": "FAQ"
+  },
+  "home": {
+    "heroTitle": "Help dogs find a home",
+    "heroSubtitle": "Report a found dog, adopt, volunteer, or donate — every action matters.",
+    "helpButton": "Donate",
+    "findDogButton": "Find a dog",
+    "reportFoundButton": "Report a found dog",
+    "reportLostButton": "Report a lost dog",
+    "statsSectionEnabled": "true",
+    "statLabel": "Dogs we've rescued"
+  },
+  "faq": {
+    "title": "Frequently asked questions",
+    "subtitle": "Quick answers about adoption, reporting, donations, and volunteering.",
+    "faq1Question": "How do I adopt a dog?",
+    "faq1Answer": "Browse our dogs page, read the profiles, and contact us by email. We will guide you through a short conversation and, if needed, a meet-and-greet with foster volunteers.",
+    "faq2Question": "How do I report a found dog?",
+    "faq2Answer": "Use the found-dog form with a photo and location if you can. Urgent cases reach our on-call volunteers faster than email. Approved reports may appear on the public map.",
+    "faq3Question": "Where do donations go?",
+    "faq3Answer": "Donations fund food, vaccinations, emergency vet care, and foster support. Bank and crypto options are on the donate page. You can submit a donation report after you pay.",
+    "faq4Question": "Can I help without adopting?",
+    "faq4Answer": "Yes — fostering, sharing reports, translating messages, and one-off transport help are all valuable. Email us to discuss what fits your schedule.",
+    "faq5Question": "How fast do you reply?",
+    "faq5Answer": "We are volunteers and usually respond within 1–2 business days. For urgent street cases, use the found-dog report rather than waiting for email.",
+    "ctaContact": "Still have questions? Contact us"
+  },
+  "footer": {
+    "language": "Language",
+    "rights": "All rights reserved."
+  },
+  "dogs": {
+    "title": "Dogs looking for a home",
+    "subtitle": "Meet our dogs — available for adoption or currently in our care.",
+    "empty": "No dogs are listed at the moment. Please check back soon.",
+    "noPhoto": "No photo",
+    "viewProfile": "View profile",
+    "backToList": "Back to all dogs",
+    "about": "About",
+    "rescueStory": "Rescue story",
+    "statusAvailable": "Available",
+    "statusInCare": "In care"
+  },
+  "reportForm": {
+    "nameLabel": "Your name",
+    "phoneLabel": "Phone number",
+    "emailLabel": "Email (optional)",
+    "descriptionLabel": "Description",
+    "photoLabel": "Photo (optional)",
+    "useLocation": "Use my location",
+    "geoSuccess": "Location captured.",
+    "geoDenied": "Location not available — you can still submit without coordinates.",
+    "geoUnsupported": "Geolocation is not supported in this browser.",
+    "submit": "Submit report",
+    "submitting": "Submitting…",
+    "submitError": "Could not submit the report. Please try again.",
+    "captchaRequired": "Please complete the captcha.",
+    "captchaMissing": "Captcha is not configured. Set NEXT_PUBLIC_TURNSTILE_SITE_KEY in frontend/.env.local."
+  },
+  "foundList": {
+    "title": "Found dogs",
+    "subtitle": "Reports from people who found a dog — published immediately so volunteers can respond quickly.",
+    "addButton": "Add report",
+    "empty": "No found dog reports yet.",
+    "noPhoto": "No photo",
+    "viewReport": "View report",
+    "verified": "Verified"
+  },
+  "lostList": {
+    "title": "Lost dogs",
+    "subtitle": "Missing dogs reported by owners and helpers — visible right away.",
+    "addButton": "Add report",
+    "empty": "No lost dog reports yet.",
+    "noPhoto": "No photo",
+    "viewReport": "View report",
+    "verified": "Verified"
+  },
+  "foundDetail": {
+    "title": "Found dog report",
+    "backToList": "Back to found dogs",
+    "verified": "Verified by team",
+    "contactTitle": "Contact",
+    "contactName": "Name",
+    "contactPhone": "Phone",
+    "contactEmail": "Email",
+    "openMap": "Open in Google Maps",
+    "siteMap": "View on site map"
+  },
+  "lostDetail": {
+    "title": "Lost dog report",
+    "backToList": "Back to lost dogs",
+    "verified": "Verified by team",
+    "contactTitle": "Contact",
+    "contactName": "Name",
+    "contactPhone": "Phone",
+    "contactEmail": "Email",
+    "openMap": "Open in Google Maps",
+    "siteMap": "View on site map"
+  },
+  "foundForm": {
+    "title": "Report a found dog",
+    "subtitle": "Tell us where you saw the dog and how we can reach you. Your report is published immediately.",
+    "backToList": "Back to found dogs"
+  },
+  "lostForm": {
+    "title": "Report a lost dog",
+    "subtitle": "Share details about your missing dog. Your report is published immediately.",
+    "backToList": "Back to lost dogs"
+  },
+  "thankYou": {
+    "title": "Thank you",
+    "foundMessage": "Your found dog report is now public. Volunteers and the community can see it and contact you.",
+    "lostMessage": "Your lost dog report is now public. Volunteers and the community can see it and contact you.",
+    "donateMessage": "Your donation report has been received. After we confirm the payment, it will appear in our records.",
+    "backHome": "Back to home"
+  },
+  "map": {
+    "title": "Found & lost dogs map",
+    "subtitle": "Reports with a location. Open a marker for details or call the contact on the report page.",
+    "filterAll": "All",
+    "filterFound": "Found",
+    "filterLost": "Lost",
+    "foundLabel": "Found dog",
+    "lostLabel": "Lost dog",
+    "empty": "No reports with coordinates match this filter.",
+    "missingApiKey": "Map is unavailable. Set NEXT_PUBLIC_GOOGLE_MAPS_API_KEY in frontend/.env.local to enable Google Maps."
+  },
+  "donate": {
+    "title": "Donate",
+    "subtitle": "Your support helps us rescue, care for, and rehome dogs.",
+    "buttonCrypto": "Donate with crypto",
+    "buttonBank": "Donate with bank transfer",
+    "bankModalTitle": "Bank transfer",
+    "cryptoModalTitle": "Cryptocurrency",
+    "modalClose": "Close",
+    "bankTitle": "Bank transfer",
+    "bankAccountName": "Account name: Dog Rescue Foundation",
+    "bankName": "Bank: Example Bank (Thailand)",
+    "bankAccountNumber": "Account number: 123-456-7890",
+    "bankNote": "Please include your name in the transfer reference if you want a thank-you note.",
+    "cryptoTitle": "Cryptocurrency",
+    "cryptoSubtitle": "Send to one of the addresses below. Only send the matching asset to each address.",
+    "cryptoEmpty": "Crypto addresses are not configured yet.",
+    "copy": "Copy address",
+    "copied": "Copied",
+    "currencyBTC": "Bitcoin (BTC)",
+    "currencyETH": "Ethereum (ETH)",
+    "currencyUSDT": "Tether (USDT)",
+    "currencyDOGE": "Dogecoin (DOGE)",
+    "form": {
+      "sectionTitle": "Report your donation",
+      "sectionHint": "After you send the payment, tell us the amount and your contact email so we can confirm it.",
+      "amountLabelBank": "Amount (THB)",
+      "amountLabelCrypto": "Amount sent (approx. THB)",
+      "nameLabel": "Your name",
+      "emailLabel": "Email",
+      "submit": "Submit donation report",
+      "submitting": "Submitting…",
+      "submitError": "Could not submit the donation report. Please try again.",
+      "captchaRequired": "Please complete the captcha.",
+      "captchaMissing": "Captcha is not configured. Set NEXT_PUBLIC_TURNSTILE_SITE_KEY in frontend/.env.local.",
+      "errors": {
+        "invalidAmount": "Enter a valid amount greater than zero.",
+        "missingFields": "Please fill in all required fields.",
+        "invalidPaymentMethod": "Invalid payment method.",
+        "captchaRequired": "Please complete the captcha.",
+        "captchaMissing": "Captcha is not configured."
+      }
+    }
+  },
+  "about": {
+    "title": "About Dog Rescue",
+    "subtitle": "We are a volunteer-driven group helping street dogs in Thailand find safety, care, and permanent homes.",
+    "missionTitle": "Our mission",
+    "missionBody": "Every dog deserves food, medical care, and a chance at a stable life. We respond to reports from the community, coordinate rescue and treatment, and work with foster homes and adopters to give dogs a future off the street.",
+    "workTitle": "What we do",
+    "workItem1": "Rescue and emergency care for dogs reported by the public.",
+    "workItem2": "Foster care, vaccinations, and rehabilitation before adoption.",
+    "workItem3": "Community reports on found and lost dogs, shared on our map after review.",
+    "helpTitle": "How you can help",
+    "helpBody": "Donations fund food and vet bills. Sharing found-dog reports helps us act quickly. Adopting or fostering frees space for the next rescue.",
+    "ctaDonate": "Donate",
+    "ctaDogs": "Meet our dogs",
+    "ctaFound": "Report a found dog"
+  },
+  "stories": {
+    "title": "Rescue stories",
+    "subtitle": "Real dogs, real rescues — and the community that made a difference.",
+    "readMore": "Read more",
+    "backToList": "Back to stories",
+    "empty": "No stories published yet.",
+    "noPhoto": "No photo",
+    "readDogProfile": "Meet this dog",
+    "ctaDonate": "Support our work",
+    "ctaDogs": "Meet our dogs"
+  },
+  "contact": {
+    "title": "Contact us",
+    "subtitle": "Questions about adoption, volunteering, or partnerships? Reach out — we read every message.",
+    "reachTitle": "Get in touch",
+    "emailLabel": "Email",
+    "emailValue": "hello@dogerescue.org",
+    "phoneLabel": "Phone",
+    "phoneValue": "+66 80 000 0000",
+    "lineLabel": "LINE",
+    "lineValue": "@dogerescue (placeholder)",
+    "hoursTitle": "Response hours",
+    "hoursBody": "We are volunteers and reply as soon as we can, usually within 1–2 business days. English and Thai supported.",
+    "addressTitle": "Location",
+    "addressBody": "Bangkok, Thailand\n(Office visits by appointment only)",
+    "noteBody": "If you see a dog that needs urgent help right now, please use the found-dog report — it reaches our on-call volunteers faster than email.",
+    "ctaFound": "Report a found dog"
+  }
+}

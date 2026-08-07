@@ -1,0 +1,2056 @@
+openapi: 3.0.0
+paths:
+  /api/v1/health:
+    get:
+      operationId: HealthController_getHealth
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponseDto'
+        '503':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponseDto'
+      summary: Service health check
+      tags:
+        - health
+  /api/v1/auth/login:
+    post:
+      operationId: AuthController_login
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponseDto'
+        '401':
+          description: Invalid credentials
+        '403':
+          description: USER role cannot access admin
+      summary: Admin login
+      tags: &ref_0
+        - auth
+  /api/v1/auth/me:
+    get:
+      operationId: AuthController_me
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthUserDto'
+        '401':
+          description: ''
+      security:
+        - bearer: []
+      summary: Current authenticated user
+      tags: *ref_0
+  /api/v1/admin/media:
+    post:
+      operationId: MediaController_upload
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                entityType:
+                  type: string
+                  example: dog
+                entityId:
+                  type: string
+                  format: uuid
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaResponseDto'
+        '401':
+          description: ''
+        '413':
+          description: ''
+      security: &ref_1
+        - bearer: []
+      summary: Upload image media
+      tags: &ref_2
+        - admin-media
+  /api/v1/admin/media/{id}:
+    get:
+      operationId: MediaController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaResponseDto'
+        '401':
+          description: ''
+        '404':
+          description: ''
+      security: *ref_1
+      summary: Get media metadata and presigned URL
+      tags: *ref_2
+    delete:
+      operationId: MediaController_remove
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '204':
+          description: ''
+        '401':
+          description: ''
+        '403':
+          description: ''
+        '404':
+          description: ''
+      security: *ref_1
+      summary: Soft-delete media
+      tags: *ref_2
+  /api/v1/admin/dogs:
+    get:
+      operationId: DogsAdminController_findAll
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 20
+            type: number
+        - name: status
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - AVAILABLE
+              - ADOPTED
+              - IN_CARE
+              - ARCHIVED
+        - name: isPublished
+          required: false
+          in: query
+          schema:
+            type: boolean
+        - name: excludeArchived
+          required: false
+          in: query
+          description: When true, omit ARCHIVED dogs (unless status=ARCHIVED)
+          schema:
+            type: boolean
+        - name: search
+          required: false
+          in: query
+          description: Filter by slug substring (case-insensitive)
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDogsAdminResponseDto'
+      security: &ref_3
+        - bearer: []
+      summary: List dogs (admin)
+      tags: &ref_4
+        - admin-dogs
+    post:
+      operationId: DogsAdminController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDogDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DogAdminResponseDto'
+      security: *ref_3
+      summary: Create dog
+      tags: *ref_4
+  /api/v1/admin/dogs/{id}:
+    get:
+      operationId: DogsAdminController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DogAdminResponseDto'
+      security: *ref_3
+      summary: Get dog by id (admin)
+      tags: *ref_4
+    patch:
+      operationId: DogsAdminController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateDogDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DogAdminResponseDto'
+      security: *ref_3
+      summary: Update dog
+      tags: *ref_4
+  /api/v1/admin/dogs/{id}/archive:
+    post:
+      operationId: DogsAdminController_archive
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DogAdminResponseDto'
+      security: *ref_3
+      summary: Archive dog (ADMIN only)
+      tags: *ref_4
+  /api/v1/dogs:
+    get:
+      operationId: DogsPublicController_findAll
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 20
+            type: number
+        - name: status
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - AVAILABLE
+              - ADOPTED
+              - IN_CARE
+              - ARCHIVED
+        - name: isPublished
+          required: false
+          in: query
+          schema:
+            type: boolean
+        - name: excludeArchived
+          required: false
+          in: query
+          description: When true, omit ARCHIVED dogs (unless status=ARCHIVED)
+          schema:
+            type: boolean
+        - name: search
+          required: false
+          in: query
+          description: Filter by slug substring (case-insensitive)
+          schema:
+            type: string
+        - name: accept-language
+          required: true
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDogsPublicResponseDto'
+      summary: List published dogs
+      tags: &ref_5
+        - dogs
+  /api/v1/dogs/{slug}:
+    get:
+      operationId: DogsPublicController_findBySlug
+      parameters:
+        - name: slug
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: accept-language
+          required: true
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DogPublicResponseDto'
+      summary: Get published dog by slug
+      tags: *ref_5
+  /api/v1/found-reports:
+    get:
+      operationId: FoundReportsPublicController_findAll
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 20
+            type: number
+        - name: status
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - ACTIVE
+              - HIDDEN
+              - VERIFIED
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedReportsPublicResponseDto'
+      summary: List public found dog reports
+      tags: &ref_6
+        - found-reports
+    post:
+      operationId: FoundReportsPublicController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReportDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportResponseDto'
+      summary: Submit a found dog report
+      tags: *ref_6
+  /api/v1/found-reports/{id}:
+    get:
+      operationId: FoundReportsPublicController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportPublicDetailDto'
+      summary: Get public found dog report by id
+      tags: *ref_6
+  /api/v1/found-reports/{id}/media:
+    post:
+      operationId: FoundReportsPublicController_uploadMedia
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaResponseDto'
+      tags: *ref_6
+  /api/v1/admin/found-reports:
+    get:
+      operationId: FoundReportsAdminController_findAll
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 20
+            type: number
+        - name: status
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - ACTIVE
+              - HIDDEN
+              - VERIFIED
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedReportsResponseDto'
+      security: &ref_7
+        - bearer: []
+      summary: List found reports
+      tags: &ref_8
+        - admin-found-reports
+  /api/v1/admin/found-reports/{id}:
+    get:
+      operationId: FoundReportsAdminController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportResponseDto'
+      security: *ref_7
+      summary: Get found report by id
+      tags: *ref_8
+    patch:
+      operationId: FoundReportsAdminController_updateStatus
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateReportStatusDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportResponseDto'
+      security: *ref_7
+      summary: Update found report status (hide, verify, restore)
+      tags: *ref_8
+  /api/v1/lost-reports:
+    get:
+      operationId: LostReportsPublicController_findAll
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 20
+            type: number
+        - name: status
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - ACTIVE
+              - HIDDEN
+              - VERIFIED
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedReportsPublicResponseDto'
+      summary: List public lost dog reports
+      tags: &ref_9
+        - lost-reports
+    post:
+      operationId: LostReportsPublicController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReportDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportResponseDto'
+      summary: Submit a lost dog report
+      tags: *ref_9
+  /api/v1/lost-reports/{id}:
+    get:
+      operationId: LostReportsPublicController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportPublicDetailDto'
+      summary: Get public lost dog report by id
+      tags: *ref_9
+  /api/v1/lost-reports/{id}/media:
+    post:
+      operationId: LostReportsPublicController_uploadMedia
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaResponseDto'
+      tags: *ref_9
+  /api/v1/admin/lost-reports:
+    get:
+      operationId: LostReportsAdminController_findAll
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 20
+            type: number
+        - name: status
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - ACTIVE
+              - HIDDEN
+              - VERIFIED
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedReportsResponseDto'
+      security: &ref_10
+        - bearer: []
+      summary: List lost reports
+      tags: &ref_11
+        - admin-lost-reports
+  /api/v1/admin/lost-reports/{id}:
+    get:
+      operationId: LostReportsAdminController_findOne
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportResponseDto'
+      security: *ref_10
+      summary: Get lost report by id
+      tags: *ref_11
+    patch:
+      operationId: LostReportsAdminController_updateStatus
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateReportStatusDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportResponseDto'
+      security: *ref_10
+      summary: Update lost report status (hide, verify, restore)
+      tags: *ref_11
+  /api/v1/map/markers:
+    get:
+      operationId: MapPublicController_findMarkers
+      parameters:
+        - name: type
+          required: false
+          in: query
+          schema:
+            default: all
+            type: string
+            enum:
+              - found
+              - lost
+              - all
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MapMarkersResponseDto'
+      summary: List approved report markers for the public map
+      tags:
+        - map
+  /api/v1/donate/crypto-addresses:
+    get:
+      operationId: DonatePublicController_findActive
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CryptoAddressesPublicResponseDto'
+      summary: List active crypto donation addresses
+      tags: &ref_12
+        - donate
+  /api/v1/donate/donations:
+    post:
+      operationId: DonatePublicController_createDonation
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDonationPublicDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DonationResponseDto'
+      summary: Report a bank or crypto donation
+      tags: *ref_12
+  /api/v1/admin/crypto-addresses:
+    get:
+      operationId: CryptoAddressesAdminController_findAll
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CryptoAddressesAdminResponseDto'
+      security: &ref_13
+        - bearer: []
+      summary: List crypto donation addresses
+      tags: &ref_14
+        - admin-crypto-addresses
+    post:
+      operationId: CryptoAddressesAdminController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCryptoAddressDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CryptoAddressAdminDto'
+      security: *ref_13
+      summary: Create crypto donation address
+      tags: *ref_14
+  /api/v1/admin/crypto-addresses/{id}:
+    patch:
+      operationId: CryptoAddressesAdminController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCryptoAddressDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CryptoAddressAdminDto'
+      security: *ref_13
+      summary: Update crypto donation address
+      tags: *ref_14
+  /api/v1/admin/donations:
+    get:
+      operationId: DonationsAdminController_findAll
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 20
+            type: number
+        - name: status
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - PENDING
+              - CONFIRMED
+              - FAILED
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDonationsResponseDto'
+      security: &ref_15
+        - bearer: []
+      summary: List donation records
+      tags: &ref_16
+        - admin-donations
+    post:
+      operationId: DonationsAdminController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDonationAdminDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DonationResponseDto'
+      security: *ref_15
+      summary: Create donation record manually
+      tags: *ref_16
+  /api/v1/admin/donations/{id}:
+    patch:
+      operationId: DonationsAdminController_updateStatus
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateDonationStatusDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DonationResponseDto'
+      security: *ref_15
+      summary: Confirm or reject pending donation
+      tags: *ref_16
+  /api/v1/admin/dashboard/stats:
+    get:
+      operationId: DashboardAdminController_getStats
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardStatsDto'
+      security:
+        - bearer: []
+      summary: Dashboard aggregate stats
+      tags:
+        - admin-dashboard
+  /api/v1/admin/users:
+    get:
+      operationId: UsersAdminController_findAll
+      parameters:
+        - name: page
+          required: false
+          in: query
+          schema:
+            default: 1
+            type: number
+        - name: limit
+          required: false
+          in: query
+          schema:
+            default: 20
+            type: number
+        - name: role
+          required: false
+          in: query
+          schema:
+            type: string
+            enum:
+              - ADMIN
+              - STAFF
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUsersAdminResponseDto'
+      security: &ref_17
+        - bearer: []
+      summary: List admin panel users (ADMIN/STAFF)
+      tags: &ref_18
+        - admin-users
+    post:
+      operationId: UsersAdminController_create
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserAdminDto'
+      responses:
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAdminResponseDto'
+      security: *ref_17
+      summary: Create admin panel user
+      tags: *ref_18
+  /api/v1/admin/users/{id}:
+    patch:
+      operationId: UsersAdminController_update
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserAdminDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserAdminResponseDto'
+      security: *ref_17
+      summary: Update role and/or password
+      tags: *ref_18
+  /api/v1/content/pages/{entityId}:
+    get:
+      operationId: ContentPublicController_getPage
+      parameters:
+        - name: entityId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: locale
+          required: false
+          in: query
+          schema:
+            example: en
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageContentPublicDto'
+      summary: Get CMS page content for a locale (fallback en)
+      tags:
+        - content
+  /api/v1/admin/content/pages:
+    get:
+      operationId: ContentAdminController_listPages
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ContentPageSummaryDto'
+      security: &ref_19
+        - bearer: []
+      summary: List CMS pages available for editing
+      tags: &ref_20
+        - admin-content
+  /api/v1/admin/content/pages/{entityId}:
+    get:
+      operationId: ContentAdminController_getPage
+      parameters:
+        - name: entityId
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageContentAdminDto'
+      security: *ref_19
+      summary: Get all stored translations for a page
+      tags: *ref_20
+    put:
+      operationId: ContentAdminController_upsertPage
+      parameters:
+        - name: entityId
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertPageContentDto'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageContentAdminDto'
+      security: *ref_19
+      summary: Bulk upsert page translations
+      tags: *ref_20
+info:
+  title: Dog Rescue API
+  description: REST API for Dog Rescue (MVP scaffold)
+  version: '1.0'
+  contact: {}
+tags: []
+servers:
+  - url: /
+components:
+  securitySchemes:
+    bearer:
+      scheme: bearer
+      bearerFormat: JWT
+      type: http
+  schemas:
+    HealthResponseDto:
+      type: object
+      properties:
+        status:
+          type: string
+          example: ok
+          description: ok or degraded when DB unavailable
+        database:
+          type: string
+          example: ok
+          description: ok or error
+        timestamp:
+          type: string
+          example: '2026-07-31T12:00:00.000Z'
+        version:
+          type: string
+          example: 0.0.1
+      required:
+        - status
+        - database
+        - timestamp
+        - version
+    LoginDto:
+      type: object
+      properties:
+        email:
+          type: string
+          example: admin@dogerescue.org
+        password:
+          type: string
+      required:
+        - email
+        - password
+    AuthUserDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          example: admin@dogerescue.org
+        role:
+          type: string
+          enum:
+            - ADMIN
+            - STAFF
+            - USER
+          example: ADMIN
+      required:
+        - id
+        - email
+        - role
+    LoginResponseDto:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        user:
+          $ref: '#/components/schemas/AuthUserDto'
+      required:
+        - accessToken
+        - user
+    MediaResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        mimeType:
+          type: string
+          example: image/png
+        sizeBytes:
+          type: number
+          example: 1024
+        url:
+          type: string
+          description: Presigned GET URL (expires per MEDIA_PRESIGNED_TTL_SECONDS)
+        createdAt:
+          type: string
+          example: '2026-08-02T00:00:00.000Z'
+      required:
+        - id
+        - mimeType
+        - sizeBytes
+        - url
+        - createdAt
+    DogListItemDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        slug:
+          type: string
+        status:
+          type: string
+          enum:
+            - AVAILABLE
+            - ADOPTED
+            - IN_CARE
+            - ARCHIVED
+        isPublished:
+          type: boolean
+        nameEn:
+          type: string
+        updatedAt:
+          type: string
+      required:
+        - id
+        - slug
+        - status
+        - isPublished
+        - updatedAt
+    PaginatedDogsAdminResponseDto:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/DogListItemDto'
+        total:
+          type: number
+        page:
+          type: number
+        limit:
+          type: number
+      required:
+        - items
+        - total
+        - page
+        - limit
+    DogLocaleContentRequiredDto:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Luna
+        description:
+          type: string
+          example: Friendly mixed-breed looking for a calm home.
+        rescueStory:
+          type: string
+      required:
+        - name
+        - description
+    DogLocaleContentOptionalDto:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Luna
+        description:
+          type: string
+        rescueStory:
+          type: string
+    DogDescriptionsDto:
+      type: object
+      properties:
+        en:
+          $ref: '#/components/schemas/DogLocaleContentRequiredDto'
+        th:
+          $ref: '#/components/schemas/DogLocaleContentOptionalDto'
+        ru:
+          $ref: '#/components/schemas/DogLocaleContentOptionalDto'
+      required:
+        - en
+    CreateDogDto:
+      type: object
+      properties:
+        descriptions:
+          $ref: '#/components/schemas/DogDescriptionsDto'
+        slug:
+          type: string
+          example: luna
+        status:
+          type: string
+          enum:
+            - AVAILABLE
+            - ADOPTED
+            - IN_CARE
+            - ARCHIVED
+          default: IN_CARE
+        isPublished:
+          type: boolean
+          default: false
+      required:
+        - descriptions
+    DogAdminResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        slug:
+          type: string
+        status:
+          type: string
+          enum:
+            - AVAILABLE
+            - ADOPTED
+            - IN_CARE
+            - ARCHIVED
+        isPublished:
+          type: boolean
+        descriptions:
+          type: object
+        seo:
+          type: object
+        media:
+          type: array
+          items:
+            $ref: '#/components/schemas/MediaResponseDto'
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+        - id
+        - slug
+        - status
+        - isPublished
+        - descriptions
+        - seo
+        - media
+        - createdAt
+        - updatedAt
+    UpdateDogDto:
+      type: object
+      properties:
+        descriptions:
+          $ref: '#/components/schemas/DogDescriptionsDto'
+        seo:
+          type: object
+        slug:
+          type: string
+        status:
+          type: string
+          enum:
+            - AVAILABLE
+            - ADOPTED
+            - IN_CARE
+            - ARCHIVED
+        isPublished:
+          type: boolean
+    DogPublicMediaDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        url:
+          type: string
+        mimeType:
+          type: string
+      required:
+        - id
+        - url
+        - mimeType
+    DogPublicResponseDto:
+      type: object
+      properties:
+        slug:
+          type: string
+        status:
+          type: string
+          enum:
+            - AVAILABLE
+            - ADOPTED
+            - IN_CARE
+            - ARCHIVED
+        name:
+          type: string
+        description:
+          type: string
+        rescueStory:
+          type: string
+        seoTitle:
+          type: string
+        seoDescription:
+          type: string
+        media:
+          type: array
+          items:
+            $ref: '#/components/schemas/DogPublicMediaDto'
+        locale:
+          type: string
+      required:
+        - slug
+        - status
+        - name
+        - description
+        - media
+        - locale
+    PaginatedDogsPublicResponseDto:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/DogPublicResponseDto'
+        total:
+          type: number
+        page:
+          type: number
+        limit:
+          type: number
+      required:
+        - items
+        - total
+        - page
+        - limit
+    ReportPublicListItemDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        description:
+          type: string
+        createdAt:
+          type: string
+        thumbnailUrl:
+          type: object
+        hasLocation:
+          type: boolean
+        verified:
+          type: boolean
+      required:
+        - id
+        - description
+        - createdAt
+        - hasLocation
+        - verified
+    PaginatedReportsPublicResponseDto:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReportPublicListItemDto'
+        total:
+          type: number
+        page:
+          type: number
+        limit:
+          type: number
+      required:
+        - items
+        - total
+        - page
+        - limit
+    ReportPublicDetailDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        reporterName:
+          type: string
+        reporterPhone:
+          type: string
+        reporterEmail:
+          type: object
+        description:
+          type: string
+        latitude:
+          type: object
+        longitude:
+          type: object
+        createdAt:
+          type: string
+        verified:
+          type: boolean
+        media:
+          type: array
+          items:
+            type: object
+      required:
+        - id
+        - reporterName
+        - reporterPhone
+        - description
+        - createdAt
+        - verified
+        - media
+    CreateReportDto:
+      type: object
+      properties:
+        reporterName:
+          type: string
+          example: Somchai
+        reporterPhone:
+          type: string
+          example: '+66812345678'
+        reporterEmail:
+          type: string
+          example: reporter@example.com
+        description:
+          type: string
+          example: Small brown dog near the market.
+        latitude:
+          type: number
+          example: 13.7563
+        longitude:
+          type: number
+          example: 100.5018
+        captchaToken:
+          type: string
+          description: Cloudflare Turnstile token
+      required:
+        - reporterName
+        - reporterPhone
+        - description
+        - captchaToken
+    ReportResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        reporterName:
+          type: string
+        reporterPhone:
+          type: string
+        reporterEmail:
+          type: object
+        description:
+          type: string
+        latitude:
+          type: object
+        longitude:
+          type: object
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - HIDDEN
+            - VERIFIED
+        media:
+          type: array
+          items:
+            $ref: '#/components/schemas/MediaResponseDto'
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+        - id
+        - reporterName
+        - reporterPhone
+        - description
+        - status
+        - media
+        - createdAt
+        - updatedAt
+    ReportListItemDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        reporterName:
+          type: string
+        reporterPhone:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - HIDDEN
+            - VERIFIED
+        createdAt:
+          type: string
+        hasLocation:
+          type: boolean
+        verified:
+          type: boolean
+      required:
+        - id
+        - reporterName
+        - reporterPhone
+        - description
+        - status
+        - createdAt
+        - hasLocation
+        - verified
+    PaginatedReportsResponseDto:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReportListItemDto'
+        total:
+          type: number
+        page:
+          type: number
+        limit:
+          type: number
+      required:
+        - items
+        - total
+        - page
+        - limit
+    UpdateReportStatusDto:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - HIDDEN
+            - VERIFIED
+      required:
+        - status
+    MapMarkerDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          type: string
+          enum:
+            - found
+            - lost
+        description:
+          type: string
+        latitude:
+          type: string
+          example: '13.7563000'
+        longitude:
+          type: string
+          example: '100.5018000'
+        createdAt:
+          type: string
+        thumbnailUrl:
+          type: object
+      required:
+        - id
+        - type
+        - description
+        - latitude
+        - longitude
+        - createdAt
+    MapMarkersResponseDto:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/MapMarkerDto'
+      required:
+        - items
+    CryptoAddressPublicDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        currencyCode:
+          type: string
+          example: BTC
+        label:
+          type: object
+          example: Bitcoin
+        address:
+          type: string
+      required:
+        - id
+        - currencyCode
+        - address
+    CryptoAddressesPublicResponseDto:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CryptoAddressPublicDto'
+      required:
+        - items
+    CreateDonationPublicDto:
+      type: object
+      properties:
+        amount:
+          type: number
+          example: 1000
+        donorName:
+          type: string
+          example: Somchai
+        donorEmail:
+          type: string
+          example: donor@example.com
+        paymentMethod:
+          type: string
+          enum:
+            - BANK
+            - CRYPTO
+        currency:
+          type: string
+          default: THB
+        captchaToken:
+          type: string
+          description: Cloudflare Turnstile token
+      required:
+        - amount
+        - donorName
+        - donorEmail
+        - paymentMethod
+        - captchaToken
+    DonationResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        amount:
+          type: string
+          example: '1000.00'
+        currency:
+          type: string
+          example: THB
+        status:
+          type: string
+          enum:
+            - PENDING
+            - CONFIRMED
+            - FAILED
+        paymentMethod:
+          type: string
+          enum:
+            - BANK
+            - CRYPTO
+        donorName:
+          type: string
+          nullable: true
+        donorEmail:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+        - id
+        - amount
+        - currency
+        - status
+        - createdAt
+        - updatedAt
+    CryptoAddressAdminDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        currencyCode:
+          type: string
+          example: BTC
+        label:
+          type: object
+          example: Bitcoin
+        address:
+          type: string
+        isActive:
+          type: boolean
+        isDisplayed:
+          type: boolean
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+        - id
+        - currencyCode
+        - address
+        - isActive
+        - isDisplayed
+        - createdAt
+        - updatedAt
+    CryptoAddressesAdminResponseDto:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CryptoAddressAdminDto'
+      required:
+        - items
+    CreateCryptoAddressDto:
+      type: object
+      properties:
+        currencyCode:
+          type: string
+          example: BTC
+          description: Currency ticker (2-10 alphanumeric)
+        label:
+          type: string
+          example: Bitcoin
+        address:
+          type: string
+          example: bc1qexampleaddressfordevonly000000000
+        setAsDisplayed:
+          type: boolean
+          description: Show this address on the public donate page (replaces current displayed address for this currency)
+      required:
+        - currencyCode
+        - address
+    UpdateCryptoAddressDto:
+      type: object
+      properties:
+        address:
+          type: string
+        label:
+          type: string
+        isActive:
+          type: boolean
+        isDisplayed:
+          type: boolean
+          description: Show on public donate page (only one per currency)
+    PaginatedDonationsResponseDto:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/DonationResponseDto'
+        total:
+          type: number
+        page:
+          type: number
+        limit:
+          type: number
+      required:
+        - items
+        - total
+        - page
+        - limit
+    CreateDonationAdminDto:
+      type: object
+      properties:
+        amount:
+          type: number
+          example: 1000
+        donorName:
+          type: string
+          example: Somchai
+        donorEmail:
+          type: string
+          example: donor@example.com
+        paymentMethod:
+          type: string
+          enum:
+            - BANK
+            - CRYPTO
+        currency:
+          type: string
+          default: THB
+        status:
+          type: string
+          enum:
+            - PENDING
+            - CONFIRMED
+            - FAILED
+          default: PENDING
+      required:
+        - amount
+    UpdateDonationStatusDto:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - CONFIRMED
+            - FAILED
+      required:
+        - status
+    DashboardStatsDto:
+      type: object
+      properties:
+        dogsUnderCare:
+          type: number
+          example: 1
+        reportsActive:
+          type: number
+          example: 4
+        donationsThisMonth:
+          type: number
+          example: 0
+          description: Sum of CONFIRMED donations this UTC month (THB)
+        dogsAvailable:
+          type: number
+          example: 1
+      required:
+        - dogsUnderCare
+        - reportsActive
+        - donationsThisMonth
+        - dogsAvailable
+    UserAdminResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          example: staff@dogerescue.org
+        role:
+          type: string
+          enum:
+            - ADMIN
+            - STAFF
+            - USER
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+        - id
+        - email
+        - role
+        - createdAt
+        - updatedAt
+    PaginatedUsersAdminResponseDto:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserAdminResponseDto'
+        total:
+          type: number
+        page:
+          type: number
+        limit:
+          type: number
+      required:
+        - items
+        - total
+        - page
+        - limit
+    CreateUserAdminDto:
+      type: object
+      properties:
+        email:
+          type: string
+          example: staff@dogerescue.org
+        password:
+          type: string
+          minLength: 8
+        role:
+          type: string
+          enum:
+            - ADMIN
+            - STAFF
+      required:
+        - email
+        - password
+        - role
+    UpdateUserAdminDto:
+      type: object
+      properties:
+        role:
+          type: string
+          enum:
+            - ADMIN
+            - STAFF
+        password:
+          type: string
+          minLength: 8
+    PageContentPublicDto:
+      type: object
+      properties:
+        entityId:
+          type: string
+        locale:
+          type: string
+        fields:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+        - entityId
+        - locale
+        - fields
+    ContentPageSummaryDto:
+      type: object
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        fields:
+          type: array
+          items:
+            type: string
+      required:
+        - id
+        - label
+        - fields
+    ContentItemDto:
+      type: object
+      properties:
+        locale:
+          type: string
+          enum:
+            - en
+            - th
+            - ru
+        field:
+          type: string
+        value:
+          type: string
+      required:
+        - locale
+        - field
+        - value
+    PageContentAdminDto:
+      type: object
+      properties:
+        entityId:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContentItemDto'
+      required:
+        - entityId
+        - items
+    UpsertPageContentDto:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContentItemDto'
+      required:
+        - items

@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useRef, useState } from 'react';
 import { listDogs } from '@/lib/api';
 import { getToken } from '@/lib/auth';
 import { slugify } from '@/lib/slug';
+import { PhotoUploadField } from '@/components/admin/PhotoUploadField';
 import {
   CreateStoryPayload,
   StoryAdmin,
@@ -322,13 +323,15 @@ export function StoryForm({
             <img src={coverPreview} alt="" className="aspect-video w-full object-cover" />
           </div>
         ) : null}
-        <input
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          onChange={(event) => handleCoverSelect(event.target.files)}
-          disabled={formLocked}
-          className="mt-2 block w-full text-sm text-zinc-600"
-        />
+        <div className="mt-2">
+          <PhotoUploadField
+            buttonLabel={coverPreview ? 'Change cover image' : 'Add cover image'}
+            hint="JPEG, PNG, or WebP up to 5 MB."
+            disabled={formLocked}
+            resetInputAfterSelect
+            onFilesSelected={(files) => handleCoverSelect(files)}
+          />
+        </div>
         {media[0] && onDeleteCover ? (
           <button
             type="button"

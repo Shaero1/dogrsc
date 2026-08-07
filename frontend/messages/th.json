@@ -62,6 +62,8 @@
     "emailLabel": "อีเมล (ไม่บังคับ)",
     "descriptionLabel": "รายละเอียด",
     "photoLabel": "รูป (ไม่บังคับ)",
+    "photoButton": "เพิ่มรูป",
+    "photoHint": "JPEG, PNG หรือ WebP ไม่เกิน 5 MB",
     "useLocation": "ใช้ตำแหน่งของฉัน",
     "geoSuccess": "บันทึกตำแหน่งแล้ว",
     "geoDenied": "ไม่สามารถใช้ตำแหน่งได้ — ส่งได้โดยไม่มีพิกัด",

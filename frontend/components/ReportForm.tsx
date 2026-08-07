@@ -4,6 +4,7 @@ import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 import { FormEvent, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { unstable_rethrow } from 'next/navigation';
+import { PhotoUploadField } from '@/components/PhotoUploadField';
 
 type ReportFormProps = {
   onSubmit: (formData: FormData) => Promise<void>;
@@ -130,12 +131,13 @@ export function ReportForm({ onSubmit }: ReportFormProps) {
         <label className="block text-sm font-medium text-zinc-700">
           {t('photoLabel')}
         </label>
-        <input
-          name="photo"
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          className="mt-1 block w-full text-sm"
-        />
+        <div className="mt-2">
+          <PhotoUploadField
+            name="photo"
+            buttonLabel={t('photoButton')}
+            hint={t('photoHint')}
+          />
+        </div>
       </div>
       <div>
         <button

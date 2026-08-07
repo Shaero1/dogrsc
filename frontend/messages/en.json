@@ -62,6 +62,8 @@
     "emailLabel": "Email (optional)",
     "descriptionLabel": "Description",
     "photoLabel": "Photo (optional)",
+    "photoButton": "Add photo",
+    "photoHint": "JPEG, PNG, or WebP up to 5 MB",
     "useLocation": "Use my location",
     "geoSuccess": "Location captured.",
     "geoDenied": "Location not available — you can still submit without coordinates.",

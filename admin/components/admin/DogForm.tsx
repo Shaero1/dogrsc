@@ -1,6 +1,7 @@
 'use client';
 
 import { FormEvent, useEffect, useRef, useState } from 'react';
+import { PhotoUploadField } from '@/components/admin/PhotoUploadField';
 import {
   CreateDogPayload,
   DOG_STATUSES,
@@ -388,19 +389,15 @@ export function DogForm({
       {onUploadPhoto ? (
         <div className="space-y-3">
           <h3 className="text-sm font-medium text-zinc-800">Photos</h3>
-          <p className="text-sm text-zinc-600">
-            JPEG, PNG, or WebP up to 5 MB each.
-          </p>
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
+          <PhotoUploadField
+            buttonLabel="Add photo"
+            hint="JPEG, PNG, or WebP up to 5 MB each."
             disabled={formLocked}
-            onChange={(e) => {
-              const file = e.target.files?.[0];
+            resetInputAfterSelect
+            onFilesSelected={(files) => {
+              const file = files?.[0];
               if (file) void handlePhotoUpload(file);
-              e.target.value = '';
             }}
-            className="block text-sm disabled:opacity-50"
           />
           {photoUploading ? (
             <p className="text-sm text-zinc-500">Uploading photo…</p>
@@ -434,19 +431,15 @@ export function DogForm({
       ) : isCreateMode ? (
         <div className="space-y-3">
           <h3 className="text-sm font-medium text-zinc-800">Photos</h3>
-          <p className="text-sm text-zinc-600">
-            Optional. JPEG, PNG, or WebP up to 5 MB each. Uploaded when you save.
-          </p>
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
+          <PhotoUploadField
+            buttonLabel="Add photos"
+            hint="Optional. JPEG, PNG, or WebP up to 5 MB each. Uploaded when you save."
             multiple
             disabled={formLocked}
-            onChange={(e) => {
-              addPendingPhotos(e.target.files);
-              e.target.value = '';
+            resetInputAfterSelect
+            onFilesSelected={(files) => {
+              addPendingPhotos(files);
             }}
-            className="block text-sm disabled:opacity-50"
           />
           {pendingPhotos.length > 0 ? (
             <ul className="grid gap-3 sm:grid-cols-3">

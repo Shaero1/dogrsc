@@ -62,6 +62,8 @@
     "emailLabel": "Email (необязательно)",
     "descriptionLabel": "Описание",
     "photoLabel": "Фото (необязательно)",
+    "photoButton": "Добавить фото",
+    "photoHint": "JPEG, PNG или WebP до 5 МБ",
     "useLocation": "Использовать моё местоположение",
     "geoSuccess": "Координаты получены.",
     "geoDenied": "Геолокация недоступна — можно отправить без координат.",

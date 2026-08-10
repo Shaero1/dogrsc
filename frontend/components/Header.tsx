@@ -34,7 +34,7 @@ export function Header({ logoUrl }: HeaderProps) {
             <img
               src={logoUrl}
               alt=""
-              className="h-8 w-auto max-w-[120px] object-contain"
+              className="h-10 w-auto max-w-[160px] object-contain sm:h-12 sm:max-w-[200px]"
             />
           ) : null}
           <span>{tSite('name')}</span>

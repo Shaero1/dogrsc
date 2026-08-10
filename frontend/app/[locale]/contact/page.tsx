@@ -15,12 +15,25 @@ const CONTACT_FIELDS = [
   'phoneValue',
   'lineLabel',
   'lineValue',
+  'socialTitle',
+  'facebookLabel',
+  'facebookUrl',
+  'instagramLabel',
+  'instagramUrl',
+  'telegramLabel',
+  'telegramUrl',
   'hoursTitle',
   'hoursBody',
   'addressTitle',
   'addressBody',
   'noteBody',
   'ctaFound',
+] as const;
+
+const SOCIAL_LINKS = [
+  { labelKey: 'facebookLabel', urlKey: 'facebookUrl' },
+  { labelKey: 'instagramLabel', urlKey: 'instagramUrl' },
+  { labelKey: 'telegramLabel', urlKey: 'telegramUrl' },
 ] as const;
 
 export default async function ContactPage({
@@ -33,6 +46,11 @@ export default async function ContactPage({
   const t = await getTranslations('contact');
   const cms = await fetchPageContent('contact', locale);
   const c = resolvePageFields(CONTACT_FIELDS, cms, t);
+
+  const socialItems = SOCIAL_LINKS.map(({ labelKey, urlKey }) => ({
+    label: field(c, labelKey),
+    url: field(c, urlKey).trim(),
+  })).filter((item) => item.url.length > 0);
 
   return (
     <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-12">
@@ -72,6 +90,28 @@ export default async function ContactPage({
           </div>
         </dl>
       </section>
+
+      {socialItems.length > 0 ? (
+        <section className="mt-10">
+          <h2 className="text-xl font-semibold text-zinc-900">
+            {field(c, 'socialTitle')}
+          </h2>
+          <ul className="mt-4 space-y-3 text-sm">
+            {socialItems.map((item) => (
+              <li key={item.url}>
+                <a
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-amber-800 hover:underline"
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       <section className="mt-10">
         <h2 className="text-xl font-semibold text-zinc-900">{field(c, 'hoursTitle')}</h2>

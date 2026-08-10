@@ -127,7 +127,7 @@ export default function ContentPage() {
 
         <BrandingImagePanel
           title="Site logo"
-          hint="Shown in the site header next to the site name. One image for all locales."
+          hint="JPEG, PNG, or WebP up to 5 MB. Empty borders and solid backgrounds are trimmed automatically; the logo is resized for the site header."
           entityType="site"
           entityId="global"
           imageKey="logo"

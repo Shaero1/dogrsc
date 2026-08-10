@@ -17,6 +17,7 @@ import {
 } from './media.constants';
 import { canDeleteMedia } from './media.permissions';
 import { S3Service } from './s3.service';
+import { LogoImageProcessor } from './logo-image.processor';
 import {
   PAGE_MEDIA_ENTITY_TYPE,
   SITE_LOGO_ENTITY_ID,
@@ -44,6 +45,7 @@ export class MediaService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly s3: S3Service,
+    private readonly logoImageProcessor: LogoImageProcessor,
     config: ConfigService,
   ) {
     this.config = config;
@@ -78,16 +80,32 @@ export class MediaService {
 
     const mediaId = randomUUID();
     const safeName = this.sanitizeFilename(file.originalname);
-    const s3Key = `media/${mediaId}/${safeName}`;
+    let uploadBuffer = file.buffer;
+    let uploadMimeType = file.mimetype;
+    let uploadSizeBytes = file.size;
+    let storedFilename = safeName;
 
-    await this.s3.putObject(s3Key, file.buffer, file.mimetype);
+    if (
+      entityType === SITE_MEDIA_ENTITY_TYPE &&
+      entityId === SITE_LOGO_ENTITY_ID
+    ) {
+      const processed = await this.logoImageProcessor.process(file.buffer);
+      uploadBuffer = processed.buffer;
+      uploadMimeType = processed.mimeType;
+      uploadSizeBytes = processed.buffer.length;
+      storedFilename = 'logo.png';
+    }
+
+    const s3Key = `media/${mediaId}/${storedFilename}`;
+
+    await this.s3.putObject(s3Key, uploadBuffer, uploadMimeType);
 
     const media = await this.prisma.media.create({
       data: {
         id: mediaId,
         s3Key,
-        mimeType: file.mimetype,
-        sizeBytes: file.size,
+        mimeType: uploadMimeType,
+        sizeBytes: uploadSizeBytes,
         uploadedById: userId,
         entityType: entityType ?? null,
         entityId: entityId ?? null,

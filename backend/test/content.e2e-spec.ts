@@ -7,6 +7,7 @@ import { App } from 'supertest/types';
 import { AppModule } from '../src/app.module';
 import { API_PREFIX } from '../src/swagger/swagger-document';
 import { seedContentTranslations } from '../prisma/content-seed-data';
+import sharp from 'sharp';
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? 'admin@dogerescue.org';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? 'changeme-dev-only';
@@ -239,7 +240,7 @@ describe('CMS content (e2e)', () => {
       'base64',
     );
 
-    await request(app.getHttpServer())
+    const logoUpload = await request(app.getHttpServer())
       .post(`/${API_PREFIX}/admin/media`)
       .set('Authorization', `Bearer ${token}`)
       .attach('file', PNG_BUFFER, {
@@ -249,6 +250,8 @@ describe('CMS content (e2e)', () => {
       .field('entityType', 'site')
       .field('entityId', 'global')
       .expect(201);
+
+    expect(logoUpload.body.mimeType).toBe('image/png');
 
     await request(app.getHttpServer())
       .post(`/${API_PREFIX}/admin/media`)
@@ -275,5 +278,50 @@ describe('CMS content (e2e)', () => {
 
     expect(adminBranding.body.logoMedia.length).toBeGreaterThan(0);
     expect(adminBranding.body.heroMedia.length).toBeGreaterThan(0);
+  });
+
+  it('trims padded site logo on upload', async () => {
+    const token = await login(app, ADMIN_EMAIL, ADMIN_PASSWORD);
+
+    const paddedLogo = await sharp({
+      create: {
+        width: 300,
+        height: 300,
+        channels: 3,
+        background: { r: 0, g: 0, b: 0 },
+      },
+    })
+      .composite([
+        {
+          input: await sharp({
+            create: {
+              width: 60,
+              height: 60,
+              channels: 3,
+              background: { r: 220, g: 120, b: 40 },
+            },
+          })
+            .png()
+            .toBuffer(),
+          left: 120,
+          top: 120,
+        },
+      ])
+      .jpeg()
+      .toBuffer();
+
+    const upload = await request(app.getHttpServer())
+      .post(`/${API_PREFIX}/admin/media`)
+      .set('Authorization', `Bearer ${token}`)
+      .attach('file', paddedLogo, {
+        filename: 'logo-with-borders.jpg',
+        contentType: 'image/jpeg',
+      })
+      .field('entityType', 'site')
+      .field('entityId', 'global')
+      .expect(201);
+
+    expect(upload.body.mimeType).toBe('image/png');
+    expect(upload.body.sizeBytes).toBeLessThan(paddedLogo.length);
   });
 });

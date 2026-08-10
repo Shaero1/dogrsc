@@ -1,0 +1,5 @@
+export const DEFAULT_LOGO_TRIM_ENABLED = true;
+export const DEFAULT_LOGO_TRIM_THRESHOLD = 15;
+export const DEFAULT_LOGO_MAX_WIDTH = 320;
+export const DEFAULT_LOGO_MAX_HEIGHT = 128;
+export const DEFAULT_LOGO_MIN_HEIGHT = 64;

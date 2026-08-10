@@ -14,15 +14,30 @@ const navItems = [
   { key: 'contact' as const, href: '/contact' },
 ];
 
-export function Header() {
+type HeaderProps = {
+  logoUrl?: string | null;
+};
+
+export function Header({ logoUrl }: HeaderProps) {
   const t = useTranslations('nav');
   const tSite = useTranslations('site');
 
   return (
     <header className="border-b border-zinc-200 bg-white">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-4">
-        <Link href="/" className="text-lg font-semibold text-amber-800">
-          {tSite('name')}
+        <Link
+          href="/"
+          className="flex items-center gap-2 text-lg font-semibold text-amber-800"
+        >
+          {logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={logoUrl}
+              alt=""
+              className="h-8 w-auto max-w-[120px] object-contain"
+            />
+          ) : null}
+          <span>{tSite('name')}</span>
         </Link>
         <nav className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
           {navItems.map(({ key, href }) => (

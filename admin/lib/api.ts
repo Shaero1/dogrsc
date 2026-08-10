@@ -39,6 +39,10 @@ import type {
   UsersListResponse,
 } from './users-types';
 import type {
+  BrandingAdmin,
+  BrandingImage,
+} from './branding-types';
+import type {
   ContentItem,
   ContentPageSummary,
   PageContentAdmin,
@@ -390,6 +394,39 @@ export async function updateCryptoAddress(
   const res = await authFetch(token, `/admin/crypto-addresses/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    throw new Error(await parseError(res));
+  }
+
+  return res.json();
+}
+
+export async function getBrandingAdmin(token: string): Promise<BrandingAdmin> {
+  const res = await authFetch(token, '/admin/content/branding');
+
+  if (!res.ok) {
+    throw new Error(await parseError(res));
+  }
+
+  return res.json();
+}
+
+export async function uploadBrandingMedia(
+  token: string,
+  entityType: 'page' | 'site',
+  entityId: string,
+  file: File,
+): Promise<BrandingImage> {
+  const form = new FormData();
+  form.append('file', file);
+  form.append('entityType', entityType);
+  form.append('entityId', entityId);
+
+  const res = await authFetch(token, '/admin/media', {
+    method: 'POST',
+    body: form,
   });
 
   if (!res.ok) {

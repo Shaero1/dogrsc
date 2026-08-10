@@ -4,8 +4,11 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import { notFound } from 'next/navigation';
 import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
+import { fetchBranding } from '@/lib/branding-api';
 import { routing, type Locale } from '@/i18n/routing';
 import '../globals.css';
+
+export const dynamic = 'force-dynamic';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -50,6 +53,7 @@ export default async function LocaleLayout({
 
   setRequestLocale(locale);
   const messages = await getMessages();
+  const branding = await fetchBranding();
 
   return (
     <html
@@ -58,7 +62,7 @@ export default async function LocaleLayout({
     >
       <body className="flex min-h-full flex-col bg-zinc-50 text-zinc-900">
         <NextIntlClientProvider messages={messages}>
-          <Header />
+          <Header logoUrl={branding?.logo?.url ?? null} />
           <div className="flex flex-1 flex-col">{children}</div>
           <Footer />
         </NextIntlClientProvider>

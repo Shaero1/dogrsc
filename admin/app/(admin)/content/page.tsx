@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { AdminHeader } from '@/components/admin/AdminHeader';
+import { BrandingImagePanel } from '@/components/admin/BrandingImagePanel';
 import { CmsLocaleFieldsForm } from '@/components/admin/CmsLocaleFieldsForm';
 import { getContentPage, listContentPages, updateContentPage } from '@/lib/api';
 import { getToken } from '@/lib/auth';
@@ -124,6 +125,14 @@ export default function ContentPage() {
           </p>
         ) : null}
 
+        <BrandingImagePanel
+          title="Site logo"
+          hint="Shown in the site header next to the site name. One image for all locales."
+          entityType="site"
+          entityId="global"
+          imageKey="logo"
+        />
+
         <div className="mb-6">
           <label className="block text-sm">
             <span className="mb-1 block font-medium text-zinc-700">Page</span>
@@ -140,6 +149,16 @@ export default function ContentPage() {
             </select>
           </label>
         </div>
+
+        {selectedPageId === 'home' ? (
+          <BrandingImagePanel
+            title="Home hero background"
+            hint="Full-width background on the home page. Use a wide photo; text stays readable with a dark overlay."
+            entityType="page"
+            entityId="home"
+            imageKey="heroImage"
+          />
+        ) : null}
 
         {loading ? (
           <p className="text-sm text-zinc-500">Loading…</p>

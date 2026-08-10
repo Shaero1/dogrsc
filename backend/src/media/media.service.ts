@@ -17,6 +17,12 @@ import {
 } from './media.constants';
 import { canDeleteMedia } from './media.permissions';
 import { S3Service } from './s3.service';
+import {
+  PAGE_MEDIA_ENTITY_TYPE,
+  SITE_LOGO_ENTITY_ID,
+  SITE_MEDIA_ENTITY_TYPE,
+} from '../content/branding.constants';
+import { findContentPage } from '../content/content-pages.manifest';
 
 export type UploadFile = {
   buffer: Buffer;
@@ -269,6 +275,26 @@ export class MediaService {
 
       if (!story) {
         throw new NotFoundException('Story not found');
+      }
+
+      return;
+    }
+
+    if (entityType === PAGE_MEDIA_ENTITY_TYPE) {
+      const page = findContentPage(entityId);
+
+      if (!page) {
+        throw new NotFoundException('Content page not found');
+      }
+
+      return;
+    }
+
+    if (entityType === SITE_MEDIA_ENTITY_TYPE) {
+      if (entityId !== SITE_LOGO_ENTITY_ID) {
+        throw new BadRequestException(
+          `Unsupported site entityId: ${entityId}. Expected "${SITE_LOGO_ENTITY_ID}".`,
+        );
       }
 
       return;

@@ -222,4 +222,58 @@ describe('CMS content (e2e)', () => {
       .query({ locale: 'en' })
       .expect(404);
   });
+
+  it('returns public branding with null images when none uploaded', async () => {
+    const res = await request(app.getHttpServer())
+      .get(`/${API_PREFIX}/content/branding`)
+      .expect(200);
+
+    expect(res.body.logo).toBeNull();
+    expect(res.body.heroImage).toBeNull();
+  });
+
+  it('ADMIN can upload site logo and home hero via media API', async () => {
+    const token = await login(app, ADMIN_EMAIL, ADMIN_PASSWORD);
+    const PNG_BUFFER = Buffer.from(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+      'base64',
+    );
+
+    await request(app.getHttpServer())
+      .post(`/${API_PREFIX}/admin/media`)
+      .set('Authorization', `Bearer ${token}`)
+      .attach('file', PNG_BUFFER, {
+        filename: 'logo.png',
+        contentType: 'image/png',
+      })
+      .field('entityType', 'site')
+      .field('entityId', 'global')
+      .expect(201);
+
+    await request(app.getHttpServer())
+      .post(`/${API_PREFIX}/admin/media`)
+      .set('Authorization', `Bearer ${token}`)
+      .attach('file', PNG_BUFFER, {
+        filename: 'hero.png',
+        contentType: 'image/png',
+      })
+      .field('entityType', 'page')
+      .field('entityId', 'home')
+      .expect(201);
+
+    const branding = await request(app.getHttpServer())
+      .get(`/${API_PREFIX}/content/branding`)
+      .expect(200);
+
+    expect(branding.body.logo?.url).toContain('http');
+    expect(branding.body.heroImage?.url).toContain('http');
+
+    const adminBranding = await request(app.getHttpServer())
+      .get(`/${API_PREFIX}/admin/content/branding`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200);
+
+    expect(adminBranding.body.logoMedia.length).toBeGreaterThan(0);
+    expect(adminBranding.body.heroMedia.length).toBeGreaterThan(0);
+  });
 });

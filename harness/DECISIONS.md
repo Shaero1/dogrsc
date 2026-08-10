@@ -1,6 +1,11 @@
 # Журнал решений (DECISIONS.md)
 <!-- Новые записи сверху. Формат: дата, суть, причина. 3–5 строк, не эссе. -->
 
+## 2026-08-11 — Report form: GPS + manual map pin
+- Решение: **`ReportForm`** — «Use my location» (GPS → показать карту с пином) + «Place pin on map» (tap/drag); одна **`LocationPickerMap`**, coords optional как раньше; backend без изменений.
+- Почему: GPS часто неточен; manual для «знаю место, но не на месте»; progressive disclosure — карта только после действия.
+- Затронуто: `frontend/components/LocationPickerMap.tsx`, `ReportForm.tsx`, `tasks/2026-08-11-report-location-picker/`
+
 ## 2026-08-10 — Header typography
 - Решение: название **`text-xl sm:text-2xl`**, nav **`text-base`**, padding **`py-3 sm:py-3.5`** — пропорции от высоты logo 40/48px; tagline в header не показываем.
 - Почему: `text-lg` + `text-sm` мелковаты на glass при 10 nav items.

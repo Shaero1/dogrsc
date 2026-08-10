@@ -4,6 +4,7 @@ import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 import { FormEvent, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { unstable_rethrow } from 'next/navigation';
+import { LocationPickerMap } from '@/components/LocationPickerMap';
 import { PhotoUploadField } from '@/components/PhotoUploadField';
 
 type ReportFormProps = {
@@ -13,13 +14,24 @@ type ReportFormProps = {
 export function ReportForm({ onSubmit }: ReportFormProps) {
   const t = useTranslations('reportForm');
   const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? '';
+  const mapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? '';
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
   const [geoMessage, setGeoMessage] = useState<string | null>(null);
+  const [mapVisible, setMapVisible] = useState(false);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const turnstileRef = useRef<TurnstileInstance | null>(null);
+
+  const hasPin = latitude !== null && longitude !== null;
+  const pickMode = mapVisible && !hasPin;
+
+  function handleLocationChange(nextLatitude: number, nextLongitude: number) {
+    setLatitude(nextLatitude);
+    setLongitude(nextLongitude);
+    setGeoMessage(t('mapAdjustHint'));
+  }
 
   function handleUseLocation() {
     setGeoMessage(null);
@@ -33,7 +45,8 @@ export function ReportForm({ onSubmit }: ReportFormProps) {
       (position) => {
         setLatitude(position.coords.latitude);
         setLongitude(position.coords.longitude);
-        setGeoMessage(t('geoSuccess'));
+        setMapVisible(true);
+        setGeoMessage(t('geoSuccessAdjust'));
       },
       () => {
         setLatitude(null);
@@ -41,6 +54,11 @@ export function ReportForm({ onSubmit }: ReportFormProps) {
         setGeoMessage(t('geoDenied'));
       },
     );
+  }
+
+  function handleManualPin() {
+    setMapVisible(true);
+    setGeoMessage(hasPin ? t('mapAdjustHint') : t('manualPinHint'));
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -81,6 +99,8 @@ export function ReportForm({ onSubmit }: ReportFormProps) {
       setCaptchaToken(null);
     }
   }
+
+  const mapHint = pickMode ? t('manualPinHint') : t('mapAdjustHint');
 
   return (
     <form onSubmit={handleSubmit} className="mx-auto max-w-xl space-y-4">
@@ -139,16 +159,37 @@ export function ReportForm({ onSubmit }: ReportFormProps) {
           />
         </div>
       </div>
-      <div>
-        <button
-          type="button"
-          onClick={handleUseLocation}
-          className="rounded-md border border-zinc-300 px-3 py-2 text-sm hover:bg-zinc-50"
-        >
-          {t('useLocation')}
-        </button>
+      <div className="space-y-3">
+        <p className="text-sm font-medium text-zinc-700">{t('locationLabel')}</p>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={handleUseLocation}
+            className="rounded-md border border-zinc-300 px-3 py-2 text-sm hover:bg-zinc-50"
+          >
+            {t('useLocation')}
+          </button>
+          <button
+            type="button"
+            onClick={handleManualPin}
+            className="rounded-md border border-zinc-300 px-3 py-2 text-sm hover:bg-zinc-50"
+          >
+            {t('addPinManually')}
+          </button>
+        </div>
         {geoMessage ? (
-          <p className="mt-2 text-sm text-zinc-600">{geoMessage}</p>
+          <p className="text-sm text-zinc-600">{geoMessage}</p>
+        ) : null}
+        {mapVisible ? (
+          <LocationPickerMap
+            apiKey={mapsApiKey}
+            latitude={latitude}
+            longitude={longitude}
+            onLocationChange={handleLocationChange}
+            pickMode={pickMode}
+            hint={mapHint}
+            missingApiKeyMessage={t('mapMissingApiKey')}
+          />
         ) : null}
       </div>
       {siteKey ? (

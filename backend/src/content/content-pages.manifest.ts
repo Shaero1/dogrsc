@@ -5,11 +5,16 @@ export type ContentLocale = (typeof CONTENT_LOCALES)[number];
 
 export const CONTENT_FALLBACK_LOCALE: ContentLocale = 'en';
 
+export type ContentAdminSection = 'content' | 'donations';
+
 export type ContentPageDefinition = {
   id: string;
   label: string;
   fields: readonly string[];
+  adminSection?: ContentAdminSection;
 };
+
+export const DONATE_BANK_PAGE_ID = 'donate-bank' as const;
 
 export const CONTENT_PAGES: readonly ContentPageDefinition[] = [
   {
@@ -97,8 +102,9 @@ export const CONTENT_PAGES: readonly ContentPageDefinition[] = [
     fields: ['title', 'subtitle', 'ctaDonate', 'ctaDogs'],
   },
   {
-    id: 'donate-bank',
+    id: DONATE_BANK_PAGE_ID,
     label: 'Donate — bank details',
+    adminSection: 'donations',
     fields: [
       'bankAccountName',
       'bankName',

@@ -141,6 +141,9 @@ describe('CMS content (e2e)', () => {
     expect(list.body.some((page: { id: string }) => page.id === 'about')).toBe(
       true,
     );
+    expect(
+      list.body.some((page: { id: string }) => page.id === 'donate-bank'),
+    ).toBe(false);
 
     const updatedTitle = `About CMS test ${Date.now()}`;
     const put = await request(app.getHttpServer())
@@ -178,6 +181,39 @@ describe('CMS content (e2e)', () => {
         items: [{ locale: 'en', field: 'title', value: 'Blocked' }],
       })
       .expect(403);
+  });
+
+  it('STAFF can read and update bank details via donations admin API', async () => {
+    const token = await login(app, STAFF_EMAIL, STAFF_PASSWORD);
+    const updatedNote = `Bank note staff test ${Date.now()}`;
+
+    const getRes = await request(app.getHttpServer())
+      .get(`/${API_PREFIX}/admin/donations/bank-details`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200);
+
+    expect(getRes.body.entityId).toBe('donate-bank');
+    expect(
+      getRes.body.items.some(
+        (item: { locale: string; field: string }) =>
+          item.locale === 'en' && item.field === 'bankAccountName',
+      ),
+    ).toBe(true);
+
+    await request(app.getHttpServer())
+      .put(`/${API_PREFIX}/admin/donations/bank-details`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        items: [{ locale: 'en', field: 'bankNote', value: updatedNote }],
+      })
+      .expect(200);
+
+    const publicRes = await request(app.getHttpServer())
+      .get(`/${API_PREFIX}/content/pages/donate-bank`)
+      .query({ locale: 'en' })
+      .expect(200);
+
+    expect(publicRes.body.fields.bankNote).toBe(updatedNote);
   });
 
   it('returns 404 for unknown page', async () => {

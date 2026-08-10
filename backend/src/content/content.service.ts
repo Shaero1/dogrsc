@@ -24,11 +24,13 @@ export class ContentService {
   constructor(private readonly prisma: PrismaService) {}
 
   listPages(): ContentPageSummaryDto[] {
-    return CONTENT_PAGES.map((page) => ({
-      id: page.id,
-      label: page.label,
-      fields: [...page.fields],
-    }));
+    return CONTENT_PAGES.filter((page) => page.adminSection !== 'donations').map(
+      (page) => ({
+        id: page.id,
+        label: page.label,
+        fields: [...page.fields],
+      }),
+    );
   }
 
   async getPublicPage(

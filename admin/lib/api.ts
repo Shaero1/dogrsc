@@ -399,6 +399,32 @@ export async function updateCryptoAddress(
   return res.json();
 }
 
+export async function getBankDetails(token: string): Promise<PageContentAdmin> {
+  const res = await authFetch(token, '/admin/donations/bank-details');
+
+  if (!res.ok) {
+    throw new Error(await parseError(res));
+  }
+
+  return res.json();
+}
+
+export async function updateBankDetails(
+  token: string,
+  items: ContentItem[],
+): Promise<PageContentAdmin> {
+  const res = await authFetch(token, '/admin/donations/bank-details', {
+    method: 'PUT',
+    body: JSON.stringify({ items }),
+  });
+
+  if (!res.ok) {
+    throw new Error(await parseError(res));
+  }
+
+  return res.json();
+}
+
 export async function listDonations(
   token: string,
   params?: { status?: DonationStatus; page?: number; limit?: number },

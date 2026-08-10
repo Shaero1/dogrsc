@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from 'react';
 import { AdminHeader } from '@/components/admin/AdminHeader';
+import { BankDetailsPanel } from '@/components/admin/BankDetailsPanel';
 import {
   createCryptoAddress,
   createDonationAdmin,
@@ -22,7 +23,7 @@ import {
   type PaymentMethod,
 } from '@/lib/donations-types';
 
-type Tab = 'crypto' | 'records';
+type Tab = 'crypto' | 'bank' | 'records';
 
 const RECORDS_PAGE_SIZE = 20;
 
@@ -283,8 +284,8 @@ export default function DonationsPage() {
       <AdminHeader title="Donations" />
       <div className="flex-1 p-6">
         <p className="mb-4 text-sm text-zinc-600">
-          Manage crypto addresses and donation records submitted by the public or
-          added manually.
+          Manage bank details, crypto addresses, and donation records submitted by
+          the public or added manually.
         </p>
 
         <div className="mb-6 flex gap-2 border-b border-zinc-200">
@@ -298,6 +299,17 @@ export default function DonationsPage() {
             }`}
           >
             Crypto addresses
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab('bank')}
+            className={`border-b-2 px-4 py-2 text-sm font-medium ${
+              tab === 'bank'
+                ? 'border-amber-800 text-amber-900'
+                : 'border-transparent text-zinc-600 hover:text-zinc-900'
+            }`}
+          >
+            Bank details
           </button>
           <button
             type="button"
@@ -486,6 +498,8 @@ export default function DonationsPage() {
               </div>
             ) : null}
           </>
+        ) : tab === 'bank' ? (
+          <BankDetailsPanel />
         ) : (
           <>
             {recordsError ? (

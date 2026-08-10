@@ -2,45 +2,20 @@
 
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { AdminHeader } from '@/components/admin/AdminHeader';
+import { CmsLocaleFieldsForm } from '@/components/admin/CmsLocaleFieldsForm';
 import { getContentPage, listContentPages, updateContentPage } from '@/lib/api';
 import { getToken } from '@/lib/auth';
+import { buildDraftMap, draftToContentItems } from '@/lib/cms-draft';
 import {
-  CONTENT_LOCALES,
-  CONTENT_LOCALE_LABELS,
-  type ContentItem,
   type ContentLocale,
   type ContentPageSummary,
 } from '@/lib/content-types';
-
-function buildDraftMap(
-  fields: string[],
-  items: ContentItem[],
-): Record<ContentLocale, Record<string, string>> {
-  const draft: Record<ContentLocale, Record<string, string>> = {
-    en: {},
-    th: {},
-    ru: {},
-  };
-
-  for (const locale of CONTENT_LOCALES) {
-    for (const field of fields) {
-      const match = items.find(
-        (item) => item.locale === locale && item.field === field,
-      );
-      draft[locale][field] = match?.value ?? '';
-    }
-  }
-
-  return draft;
-}
 
 export default function ContentPage() {
   const [pages, setPages] = useState<ContentPageSummary[]>([]);
   const [selectedPageId, setSelectedPageId] = useState<string>('');
   const [locale, setLocale] = useState<ContentLocale>('en');
-  const [draft, setDraft] = useState<
-    Record<ContentLocale, Record<string, string>>
-  >({ en: {}, th: {}, ru: {} });
+  const [draft, setDraft] = useState(buildDraftMap([], []));
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -125,18 +100,11 @@ export default function ContentPage() {
     setSavedAt(null);
 
     try {
-      const items: ContentItem[] = [];
-      for (const pageLocale of CONTENT_LOCALES) {
-        for (const field of selectedPage.fields) {
-          items.push({
-            locale: pageLocale,
-            field,
-            value: draft[pageLocale][field] ?? '',
-          });
-        }
-      }
-
-      await updateContentPage(token, selectedPage.id, items);
+      await updateContentPage(
+        token,
+        selectedPage.id,
+        draftToContentItems(selectedPage.fields, draft),
+      );
       setSavedAt(new Date().toLocaleTimeString());
       await loadPageContent(selectedPage.id);
     } catch (err) {
@@ -156,7 +124,7 @@ export default function ContentPage() {
           </p>
         ) : null}
 
-        <div className="mb-6 flex flex-wrap items-end gap-4">
+        <div className="mb-6">
           <label className="block text-sm">
             <span className="mb-1 block font-medium text-zinc-700">Page</span>
             <select
@@ -171,56 +139,21 @@ export default function ContentPage() {
               ))}
             </select>
           </label>
-
-          <div className="flex gap-2">
-            {CONTENT_LOCALES.map((item) => (
-              <button
-                key={item}
-                type="button"
-                onClick={() => setLocale(item)}
-                className={`rounded-md px-3 py-2 text-sm font-medium ${
-                  locale === item
-                    ? 'bg-amber-800 text-white'
-                    : 'border border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-50'
-                }`}
-              >
-                {CONTENT_LOCALE_LABELS[item]}
-              </button>
-            ))}
-          </div>
         </div>
 
         {loading ? (
           <p className="text-sm text-zinc-500">Loading…</p>
         ) : selectedPage ? (
-          <form onSubmit={handleSubmit} className="max-w-3xl space-y-4">
-            {selectedPage.fields.map((field) => (
-              <label key={field} className="block text-sm">
-                <span className="mb-1 block font-medium text-zinc-700">
-                  {field}
-                </span>
-                <textarea
-                  rows={field.includes('Body') || field.startsWith('story') ? 4 : 2}
-                  value={draft[locale][field] ?? ''}
-                  onChange={(event) => updateField(field, event.target.value)}
-                  className="w-full rounded-md border border-zinc-300 px-3 py-2 text-sm"
-                />
-              </label>
-            ))}
-
-            <div className="flex items-center gap-4 pt-2">
-              <button
-                type="submit"
-                disabled={saving}
-                className="rounded-md bg-amber-800 px-4 py-2 text-sm font-medium text-white hover:bg-amber-900 disabled:opacity-60"
-              >
-                {saving ? 'Saving…' : 'Save all locales'}
-              </button>
-              {savedAt ? (
-                <span className="text-sm text-zinc-500">Saved at {savedAt}</span>
-              ) : null}
-            </div>
-          </form>
+          <CmsLocaleFieldsForm
+            fields={selectedPage.fields}
+            locale={locale}
+            onLocaleChange={setLocale}
+            draft={draft}
+            onFieldChange={updateField}
+            onSubmit={(event) => void handleSubmit(event)}
+            saving={saving}
+            savedAt={savedAt}
+          />
         ) : null}
       </div>
     </>

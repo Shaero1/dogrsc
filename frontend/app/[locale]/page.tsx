@@ -3,6 +3,7 @@ import { Link } from '@/i18n/navigation';
 import { HomeStatsSection } from '@/components/HomeStatsSection';
 import { getBranding } from '@/lib/branding-api';
 import { fetchPageContent } from '@/lib/content-api';
+import { formatNumber } from '@/lib/format-number';
 import { field, resolvePageFields } from '@/lib/page-content';
 import { fetchHomeStats } from '@/lib/stats-api';
 
@@ -110,9 +111,8 @@ export default async function HomePage({
 
         {showStats && stats ? (
           <HomeStatsSection
-            value={stats.dogsTotal}
+            formattedValue={formatNumber(stats.dogsTotal, locale)}
             label={field(c, 'statLabel')}
-            locale={locale}
             inverted={hasHeroImage}
           />
         ) : null}

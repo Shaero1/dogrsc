@@ -1,18 +1,14 @@
 type HomeStatsSectionProps = {
-  value: number;
+  formattedValue: string;
   label: string;
-  locale: string;
   inverted?: boolean;
 };
 
 export function HomeStatsSection({
-  value,
+  formattedValue,
   label,
-  locale,
   inverted = false,
 }: HomeStatsSectionProps) {
-  const formatted = value.toLocaleString(locale);
-
   return (
     <section
       className={`mt-16 border-t pt-12 ${
@@ -26,7 +22,7 @@ export function HomeStatsSection({
             inverted ? 'text-amber-200' : 'text-amber-800'
           }`}
         >
-          {formatted}
+          {formattedValue}
         </p>
         <p
           className={`mt-3 text-base ${inverted ? 'text-zinc-200' : 'text-zinc-600'}`}

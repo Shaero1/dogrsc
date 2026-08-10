@@ -1,6 +1,6 @@
 # Карта проекта: Doge Rescue
 
-Обновлено: **2026-08-03** (home + FAQ в CMS)
+Обновлено: **2026-08-10** (site shell, glass UI, branding CMS, dev perf)
 
 ## Что это
 
@@ -52,10 +52,10 @@ dogrsc/
 
 | Маршрут | Статус | Примечание |
 |---------|--------|------------|
-| `/[locale]` | ✅ | **CMS** hero + CTA; site name/tagline — messages |
+| `/[locale]` | ✅ | **CMS** hero + CTA на **site background**; Ken Burns; site name/tagline — messages |
 | `/[locale]/faq` | ✅ | **CMS**; 5 Q&A |
 | `/[locale]/about` | ✅ | **CMS** + messages fallback |
-| `/[locale]/contact` | ✅ | **CMS**; без contact form |
+| `/[locale]/contact` | ✅ | **CMS** + social links; без contact form |
 | `/[locale]/stories` | ✅ | **CMS**; links на seed dogs |
 | `/[locale]/dogs`, `/dogs/[slug]` | ✅ | Public API, `revalidate: 60` |
 | `/[locale]/found-dog`, `/lost-dog` | ✅ | Server Actions + optional photo |
@@ -78,7 +78,7 @@ Nav: Home, About, **FAQ**, Stories, Dogs, Map, Donate, Contact, Found/Lost.
 | **donations** | Public crypto + `POST /donate/donations`; admin crypto + records |
 | **dashboard** | `GET /admin/dashboard/stats` |
 | **users** | `GET/POST/PATCH /admin/users` (ADMIN only) |
-| **content** | `GET /content/pages/:id`; admin GET/PUT CMS |
+| **content** | `GET /content/pages/:id`; **`GET /content/branding`**; admin GET/PUT CMS + branding |
 
 E2E: 11 файлов в `backend/test/` (включая `content.e2e-spec.ts`).
 
@@ -89,15 +89,21 @@ E2E: 11 файлов в `backend/test/` (включая `content.e2e-spec.ts`).
 | `/dashboard` | ADMIN, STAFF | Stats + quick links |
 | `/dogs` | ADMIN, STAFF | CRUD, publish, media |
 | `/reports` | ADMIN, STAFF | Found/Lost moderation |
-| `/donations` | ADMIN, STAFF | Crypto addresses + donation records |
-| `/content` | **ADMIN** | CMS: about, contact, stories, donate-bank |
+| `/content` | **ADMIN** | CMS pages + **site logo/background** |
+| `/donations` | ADMIN, STAFF | Crypto + records + **bank details** |
 | `/users` | **ADMIN** | Staff accounts |
 
 Seed: `admin@dogerescue.org`, `staff@dogerescue.org`, demo dogs/reports/donations/CMS — `npm run db:seed -w dogrsc-backend`.
 
 ### CMS (`ContentTranslation`)
 
-Редактируемые страницы: **`home`**, **`faq`**, **`about`**, **`contact`**, **`stories`**, **`donate-bank`** (en/th/ru). Nav и UI-строки остаются в `frontend/messages/*.json`.
+Редактируемые страницы: **`home`**, **`faq`**, **`about`**, **`contact`** (incl. social links), **`stories`**, **`donate-bank`** (en/th/ru). **Branding:** site logo + hero (site background). Bank details редактируются в **Donations** admin. Nav и UI-строки остаются в `frontend/messages/*.json`.
+
+### Site shell + glass UI
+
+- **Site background:** CMS `heroImage` → fixed layer на всех страницах (`SiteBackground`, overlay 55%).
+- **Header/Footer:** glass/dark variant при активном фоне (`data-site-bg`).
+- **Inner pages:** `InnerMain` — title on photo, content in glass panel; cards `.glass-card`.
 
 ### Infra / CI
 
@@ -113,7 +119,8 @@ Seed: `admin@dogerescue.org`, `staff@dogerescue.org`, demo dogs/reports/donation
 | Found/lost + модерация | frontend + backend | ✅ MVP |
 | Карта | frontend + backend | ✅ MVP |
 | Пожертвования | frontend + backend | ✅ MVP (без blockchain watch) |
-| CMS статики | backend + admin + frontend | ✅ MVP (4 страницы) |
+| CMS статики | backend + admin + frontend | ✅ MVP + home/faq/branding |
+| Site shell / glass UI | frontend | ✅ локально; commit TBD |
 | Auth / роли | backend + admin | ✅ JWT; USER login — этап 2 |
 | Личный кабинет | — | ❌ этап 2 |
 | Уведомления (email) | — | ❌ этап 2 |
@@ -132,6 +139,8 @@ npm run dev
 ```
 
 Одна команда: env-файлы (если нет) → Docker infra → migrate → seed-if-empty → backend + frontend + admin.
+
+**Облегчённый режим:** `npm run dev:lite` — backend + frontend без admin (меньше RAM). Dev использует **webpack** (`next dev --webpack`), не turbopack root.
 
 | URL | Назначение |
 |-----|------------|

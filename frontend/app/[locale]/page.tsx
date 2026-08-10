@@ -1,7 +1,7 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { HomeStatsSection } from '@/components/HomeStatsSection';
-import { fetchBranding } from '@/lib/branding-api';
+import { getBranding } from '@/lib/branding-api';
 import { fetchPageContent } from '@/lib/content-api';
 import { field, resolvePageFields } from '@/lib/page-content';
 import { fetchHomeStats } from '@/lib/stats-api';
@@ -34,38 +34,25 @@ export default async function HomePage({
   const tSite = await getTranslations('site');
   const [cms, branding] = await Promise.all([
     fetchPageContent('home', locale),
-    fetchBranding(),
+    getBranding(),
   ]);
   const c = resolvePageFields(HOME_FIELDS, cms, t);
-  const heroImage = branding?.heroImage ?? null;
 
   const showStats = isStatsEnabled(field(c, 'statsSectionEnabled'));
   const stats = showStats ? await fetchHomeStats() : null;
 
-  const hasHeroImage = Boolean(heroImage?.url);
+  const hasHeroImage = Boolean(branding?.heroImage?.url);
   const textMutedClass = hasHeroImage ? 'text-zinc-200' : 'text-zinc-600';
   const textAccentClass = hasHeroImage ? 'text-amber-200' : 'text-amber-700';
   const titleClass = hasHeroImage ? 'text-white' : 'text-zinc-900';
 
   return (
-    <section className="relative w-full flex-1 overflow-hidden">
-      {hasHeroImage ? (
-        <>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={heroImage!.url}
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-          <div className="absolute inset-0 bg-zinc-900/55" aria-hidden />
-        </>
-      ) : null}
-
-      <main
-        className={`relative mx-auto flex w-full max-w-6xl flex-col justify-center px-4 py-16 ${
-          hasHeroImage ? 'min-h-[420px]' : ''
-        }`}
-      >
+    <section
+      className={`relative flex w-full flex-1 flex-col justify-center overflow-hidden ${
+        hasHeroImage ? 'min-h-[420px]' : ''
+      }`}
+    >
+      <main className="relative mx-auto flex w-full max-w-6xl flex-col justify-center px-4 py-16">
         <p
           className={`mb-2 text-sm font-medium uppercase tracking-wide ${textAccentClass}`}
         >

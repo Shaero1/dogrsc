@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { InnerMain } from '@/components/site-shell/InnerMain';
 import { fetchCryptoAddresses } from '@/lib/donate-api';
 import { fetchPageContent } from '@/lib/content-api';
 import { resolvePageFields } from '@/lib/page-content';
@@ -34,16 +35,23 @@ export default async function DonatePage({
   const pageContent = resolvePageFields(DONATE_PAGE_FIELDS, null, t);
 
   return (
-    <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-12">
-      <h1 className="text-3xl font-bold tracking-tight text-zinc-900">
-        {pageContent.title}
-      </h1>
-      <p className="mt-2 text-zinc-600">{pageContent.subtitle}</p>
+    <InnerMain
+      maxWidth="3xl"
+      solid
+      header={
+        <>
+          <h1 className="text-3xl font-bold tracking-tight text-zinc-900">
+            {pageContent.title}
+          </h1>
+          <p className="mt-2 text-zinc-600">{pageContent.subtitle}</p>
+        </>
+      }
+    >
       <DonatePageClient
         locale={locale}
         cryptoItems={items}
         bankContent={bankContent}
       />
-    </main>
+    </InnerMain>
   );
 }

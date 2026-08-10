@@ -152,8 +152,8 @@ export default function ContentPage() {
 
         {selectedPageId === 'home' ? (
           <BrandingImagePanel
-            title="Home hero background"
-            hint="Full-width background on the home page. Use a wide photo; text stays readable with a dark overlay."
+            title="Site background"
+            hint="Full-width background across the public site. Use a wide photo; header, footer, and content use overlays for readability."
             entityType="page"
             entityId="home"
             imageKey="heroImage"

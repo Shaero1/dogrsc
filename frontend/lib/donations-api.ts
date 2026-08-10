@@ -1,4 +1,5 @@
 import { getApiBase } from '@/lib/get-api-base';
+import { serverFetch } from '@/lib/server-fetch';
 
 export type PaymentMethod = 'BANK' | 'CRYPTO';
 
@@ -37,7 +38,7 @@ async function parseError(res: Response): Promise<string> {
 export async function createDonationPublic(
   payload: CreateDonationPayload,
 ): Promise<DonationResponse> {
-  const res = await fetch(`${getApiBase()}/donate/donations`, {
+  const res = await serverFetch(`${getApiBase()}/donate/donations`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),

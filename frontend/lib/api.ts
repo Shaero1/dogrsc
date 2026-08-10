@@ -1,5 +1,6 @@
 import type { Locale } from '@/i18n/routing';
 import { getApiBase } from '@/lib/get-api-base';
+import { serverFetch } from '@/lib/server-fetch';
 
 export type PublicDogMedia = {
   id: string;
@@ -36,7 +37,7 @@ export async function fetchPublicDogs(
     limit: String(limit),
   });
 
-  const res = await fetch(`${getApiBase()}/dogs?${query}`, {
+  const res = await serverFetch(`${getApiBase()}/dogs?${query}`, {
     headers: { 'Accept-Language': locale },
     next: { revalidate: 60 },
   });
@@ -52,7 +53,7 @@ export async function fetchPublicDogBySlug(
   locale: Locale,
   slug: string,
 ): Promise<PublicDog | null> {
-  const res = await fetch(`${getApiBase()}/dogs/${encodeURIComponent(slug)}`, {
+  const res = await serverFetch(`${getApiBase()}/dogs/${encodeURIComponent(slug)}`, {
     headers: { 'Accept-Language': locale },
     next: { revalidate: 60 },
   });

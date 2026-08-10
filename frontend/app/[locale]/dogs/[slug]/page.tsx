@@ -1,3 +1,4 @@
+import { InnerMain } from '@/components/site-shell/InnerMain';
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
@@ -48,29 +49,34 @@ export default async function DogProfilePage({ params }: PageProps) {
   }
 
   return (
-    <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-12">
-      <Link
-        href="/dogs"
-        className="text-sm font-medium text-amber-800 hover:underline"
-      >
-        ← {t('backToList')}
-      </Link>
+    <InnerMain
+      maxWidth="4xl"
+      header={
+        <>
+          <Link
+            href="/dogs"
+            className="text-sm font-medium text-amber-800 hover:underline"
+          >
+            ← {t('backToList')}
+          </Link>
 
-      <div className="mt-6 flex flex-wrap items-center gap-3">
-        <h1 className="text-3xl font-bold tracking-tight text-zinc-900">
-          {dog.name}
-        </h1>
-        <span className="rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-900">
-          {statusLabel(t, dog.status)}
-        </span>
-      </div>
-
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <h1 className="text-3xl font-bold tracking-tight text-zinc-900">
+              {dog.name}
+            </h1>
+            <span className="rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-900">
+              {statusLabel(t, dog.status)}
+            </span>
+          </div>
+        </>
+      }
+    >
       {dog.media.length > 0 ? (
-        <ul className="mt-8 grid gap-4 sm:grid-cols-2">
+        <ul className="grid gap-4 sm:grid-cols-2">
           {dog.media.map((item) => (
             <li
               key={item.id}
-              className="overflow-hidden rounded-xl border border-zinc-200 bg-white"
+              className="overflow-hidden rounded-xl border border-zinc-200/80"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -104,6 +110,6 @@ export default async function DogProfilePage({ params }: PageProps) {
           </div>
         ) : null}
       </section>
-    </main>
+    </InnerMain>
   );
 }

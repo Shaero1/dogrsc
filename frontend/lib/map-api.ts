@@ -1,4 +1,5 @@
 import { getApiBase } from '@/lib/get-api-base';
+import { serverFetch } from '@/lib/server-fetch';
 
 export type MapMarkerType = 'found' | 'lost';
 
@@ -20,7 +21,7 @@ export async function fetchMapMarkers(
   type: 'found' | 'lost' | 'all' = 'all',
 ): Promise<MapMarkersResponse> {
   const query = type === 'all' ? '' : `?type=${type}`;
-  const res = await fetch(`${getApiBase()}/map/markers${query}`, {
+  const res = await serverFetch(`${getApiBase()}/map/markers${query}`, {
     next: { revalidate: 60 },
   });
 

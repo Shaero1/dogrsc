@@ -1,4 +1,5 @@
 import { getApiBase } from '@/lib/get-api-base';
+import { serverFetch } from '@/lib/server-fetch';
 
 export type PublicReportListItem = {
   id: string;
@@ -55,7 +56,7 @@ async function parseError(res: Response): Promise<string> {
 }
 
 export async function fetchPublicFoundReports(): Promise<PaginatedPublicReports> {
-  const res = await fetch(`${getApiBase()}/found-reports?limit=50`, {
+  const res = await serverFetch(`${getApiBase()}/found-reports?limit=50`, {
     next: { revalidate: 30 },
   });
   if (!res.ok) {
@@ -65,7 +66,7 @@ export async function fetchPublicFoundReports(): Promise<PaginatedPublicReports>
 }
 
 export async function fetchPublicLostReports(): Promise<PaginatedPublicReports> {
-  const res = await fetch(`${getApiBase()}/lost-reports?limit=50`, {
+  const res = await serverFetch(`${getApiBase()}/lost-reports?limit=50`, {
     next: { revalidate: 30 },
   });
   if (!res.ok) {
@@ -77,7 +78,7 @@ export async function fetchPublicLostReports(): Promise<PaginatedPublicReports> 
 export async function fetchPublicFoundReport(
   id: string,
 ): Promise<PublicReportDetail | null> {
-  const res = await fetch(`${getApiBase()}/found-reports/${id}`, {
+  const res = await serverFetch(`${getApiBase()}/found-reports/${id}`, {
     cache: 'no-store',
   });
   if (res.status === 404) {
@@ -92,7 +93,7 @@ export async function fetchPublicFoundReport(
 export async function fetchPublicLostReport(
   id: string,
 ): Promise<PublicReportDetail | null> {
-  const res = await fetch(`${getApiBase()}/lost-reports/${id}`, {
+  const res = await serverFetch(`${getApiBase()}/lost-reports/${id}`, {
     cache: 'no-store',
   });
   if (res.status === 404) {
@@ -107,7 +108,7 @@ export async function fetchPublicLostReport(
 export async function createFoundReport(
   payload: CreateReportPayload,
 ): Promise<{ id: string }> {
-  const res = await fetch(`${getApiBase()}/found-reports`, {
+  const res = await serverFetch(`${getApiBase()}/found-reports`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -123,7 +124,7 @@ export async function createFoundReport(
 export async function createLostReport(
   payload: CreateReportPayload,
 ): Promise<{ id: string }> {
-  const res = await fetch(`${getApiBase()}/lost-reports`, {
+  const res = await serverFetch(`${getApiBase()}/lost-reports`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -143,7 +144,7 @@ export async function uploadFoundReportMedia(
   const form = new FormData();
   form.append('file', file);
 
-  const res = await fetch(`${getApiBase()}/found-reports/${reportId}/media`, {
+  const res = await serverFetch(`${getApiBase()}/found-reports/${reportId}/media`, {
     method: 'POST',
     body: form,
   });
@@ -160,7 +161,7 @@ export async function uploadLostReportMedia(
   const form = new FormData();
   form.append('file', file);
 
-  const res = await fetch(`${getApiBase()}/lost-reports/${reportId}/media`, {
+  const res = await serverFetch(`${getApiBase()}/lost-reports/${reportId}/media`, {
     method: 'POST',
     body: form,
   });

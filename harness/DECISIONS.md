@@ -1,6 +1,41 @@
 # Журнал решений (DECISIONS.md)
 <!-- Новые записи сверху. Формат: дата, суть, причина. 3–5 строк, не эссе. -->
 
+## 2026-08-10 — Header typography
+- Решение: название **`text-xl sm:text-2xl`**, nav **`text-base`**, padding **`py-3 sm:py-3.5`** — пропорции от высоты logo 40/48px; tagline в header не показываем.
+- Почему: `text-lg` + `text-sm` мелковаты на glass при 10 nav items.
+- Затронуто: `frontend/components/Header.tsx`, `tasks/2026-08-10-header-typography/`
+
+## 2026-08-10 — Dev: webpack вместо turbopack.root
+- Решение: убрать **`turbopack.root`** на monorepo root; **`next dev --webpack`** для frontend и admin; **`outputFileTracingRoot`** оставить для build; **`serverFetch` timeout 8s**; скрипт **`dev:lite`** (backend + frontend без admin).
+- Почему: `turbopack.root` + hoisted deps → `next-intl` MODULE_NOT_FOUND, OOM, compile 40–58s; мёртвая Postgres блокировала RSC 30+ сек без timeout.
+- Затронуто: `frontend/next.config.ts`, `admin/next.config.ts`, `frontend/lib/server-fetch.ts`, `package.json`, `scripts/dev-prepare.mjs`, `tasks/2026-08-10-dev-perf-local/`
+
+## 2026-08-10 — Glass UI inner pages
+- Решение: **`InnerMain`** — заголовок **вне** glass panel (`.page-header`, белый текст при `data-site-bg`); контент в **`.glass-panel-page`** / **`.glass-panel-form`**; карточки **`.glass-card`**; пустое media — **`.glass-card-media-empty`** без bg-slice; inputs/modals opaque.
+- Почему: opaque white boxes на full-bleed фото выглядели как «наклеенные плашки»; glass + title on overlay читаемее.
+- Затронуто: `frontend/components/site-shell/InnerMain.tsx`, `frontend/app/globals.css`, inner `page.tsx`, `tasks/2026-08-10-glass-ui-pages/`
+
+## 2026-08-10 — Site shell: CMS heroImage = site background
+- Решение: один **`heroImage`** из branding CMS — **fixed site background** на всех страницах; overlay **55%**; home — Ken Burns + scroll parallax (mobile/reduced-motion off); **`data-site-bg`** на body; header glass + scroll-solid; footer/locale dark variant; без hero — обычный light UI.
+- Почему: единый визуальный shell без отдельного CMS поля; hero с home переносится на весь сайт; fallback без фото сохраняет MVP UI.
+- Затронуто: `frontend/components/site-shell/`, `frontend/app/[locale]/layout.tsx`, `Header.tsx`, `Footer.tsx`, `tasks/2026-08-10-site-shell-background/`
+
+## 2026-08-10 — Site branding CMS (logo + hero)
+- Решение: **`GET /content/branding`** — logo + heroImage presigned URLs; admin upload в Content; logo **auto-trim/resize** (sharp) on upload; Docker COPY **backend/node_modules** для sharp.
+- Почему: logo и фон без деплоя; trim убирает пустые поля в PNG; native deps в Docker image.
+- Затронуто: `backend/src/content/branding-*`, `backend/src/media/logo-image.processor.ts`, `admin/BrandingImagePanel.tsx`, `tasks/2026-08-10-site-branding/`
+
+## 2026-08-10 — Bank details в Donations admin
+- Решение: редактирование **`donate-bank`** ContentTranslation перенесено в admin **Donations**; entity и public API без изменений.
+- Почему: bank рядом с crypto и donation records; Content editor не дублирует donations UX.
+- Затронуто: `admin/app/(admin)/donations/`, `tasks/2026-08-10-bank-details-admin/`
+
+## 2026-08-10 — Contact social links CMS
+- Решение: поля social links в CMS entity **`contact`** (manifest + seed); frontend `/contact` рендерит из CMS.
+- Почему: соцсети редактируются без деплоя; тот же ContentTranslation паттерн.
+- Затронуто: `content-pages.manifest.ts`, `contact/page.tsx`, `tasks/2026-08-10-contact-social-cms/`
+
 ## 2026-08-03 — CMS home + FAQ
 - Решение: entity **`home`** (hero + CTA buttons) и **`faq`** (5 Q&A + ctaContact) в ContentTranslation; публичная **`/[locale]/faq`**; nav **FAQ**; **`site.name`/`tagline`** остаются в messages; seed + fallback как у about.
 - Почему: закрывает пункт roadmap после базового CMS; footer — отдельно; фиксированные 5 пар Q&A достаточны для MVP admin editor.

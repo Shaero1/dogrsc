@@ -10,7 +10,11 @@ const localeLabels: Record<Locale, string> = {
   ru: 'Русский',
 };
 
-export function LocaleSwitcher() {
+type LocaleSwitcherProps = {
+  variant?: 'light' | 'dark';
+};
+
+export function LocaleSwitcher({ variant = 'light' }: LocaleSwitcherProps) {
   const t = useTranslations('footer');
   const locale = useLocale() as Locale;
   const router = useRouter();
@@ -21,13 +25,21 @@ export function LocaleSwitcher() {
     router.replace(pathname, { locale: nextLocale });
   }
 
+  const isDark = variant === 'dark';
+
   return (
-    <label className="flex items-center gap-2 text-sm text-zinc-600">
+    <label
+      className={`flex items-center gap-2 text-sm ${isDark ? 'text-zinc-300' : 'text-zinc-600'}`}
+    >
       <span>{t('language')}:</span>
       <select
         value={locale}
         onChange={onChange}
-        className="rounded border border-zinc-300 bg-white px-2 py-1 text-zinc-900"
+        className={
+          isDark
+            ? 'rounded border border-white/20 bg-zinc-900/80 px-2 py-1 text-white'
+            : 'rounded border border-zinc-300 bg-white px-2 py-1 text-zinc-900'
+        }
         aria-label={t('language')}
       >
         {routing.locales.map((loc) => (

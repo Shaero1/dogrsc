@@ -24,3 +24,153 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@keyframes site-bg-ken-burns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.06);
+  }
+}
+
+.site-bg-ken-burns {
+  animation: site-bg-ken-burns 25s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-bg-ken-burns {
+    animation: none;
+    transform: scale(1.05);
+  }
+}
+
+@supports (-webkit-touch-callout: none) {
+  .site-background-root {
+    position: absolute;
+    min-height: 100%;
+  }
+}
+
+/* ——— Site shell: glass panels (active when body[data-site-bg] is set) ——— */
+
+.glass-panel-page {
+  border-radius: 1rem;
+  border: 1px solid rgb(228 228 231);
+  background-color: rgb(255 255 255);
+  padding: 1.5rem;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+}
+
+.glass-panel-form {
+  border-radius: 1rem;
+  border: 1px solid rgb(228 228 231);
+  background-color: rgb(255 255 255);
+  padding: 1.5rem;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+}
+
+@media (min-width: 640px) {
+  .glass-panel-page,
+  .glass-panel-form {
+    padding: 2rem;
+  }
+}
+
+[data-site-bg] .glass-panel-page {
+  border-color: rgb(255 255 255 / 0.2);
+  background-color: rgb(255 255 255 / 0.4);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  backdrop-filter: blur(24px);
+}
+
+[data-site-bg] .glass-panel-form {
+  border-color: rgb(255 255 255 / 0.2);
+  background-color: rgb(255 255 255 / 0.65);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  backdrop-filter: blur(24px);
+}
+
+[data-site-bg] .page-header h1 {
+  color: rgb(255 255 255);
+}
+
+[data-site-bg] .page-header p {
+  color: rgb(228 228 231);
+}
+
+[data-site-bg] .page-header .text-zinc-900 {
+  color: rgb(255 255 255);
+}
+
+[data-site-bg] .page-header .text-zinc-600 {
+  color: rgb(228 228 231);
+}
+
+[data-site-bg] .page-header .text-zinc-500 {
+  color: rgb(212 212 216);
+}
+
+[data-site-bg] .page-header a.text-amber-800 {
+  color: rgb(253 230 138);
+}
+
+[data-site-bg] .page-header a.text-amber-800:hover {
+  color: rgb(254 243 199);
+}
+
+.glass-card {
+  overflow: hidden;
+  border-radius: 0.75rem;
+  border: 1px solid rgb(228 228 231);
+  background-color: rgb(255 255 255);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+}
+
+[data-site-bg] .glass-card {
+  border-color: rgb(255 255 255 / 0.25);
+  background-color: rgb(255 255 255 / 0.55);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  backdrop-filter: blur(12px);
+}
+
+.glass-card-media-empty {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(244 244 245);
+  font-size: 0.875rem;
+  color: rgb(161 161 170);
+}
+
+[data-site-bg] .glass-card-media-empty {
+  background-color: rgb(255 255 255 / 0.25);
+  color: rgb(113 113 122);
+  backdrop-filter: blur(4px);
+}
+
+.glass-empty-state {
+  border-radius: 0.5rem;
+  border: 1px solid rgb(228 228 231);
+  background-color: rgb(250 250 250);
+  padding: 2rem;
+  color: rgb(82 82 91);
+}
+
+[data-site-bg] .glass-empty-state {
+  border-color: rgb(255 255 255 / 0.2);
+  background-color: rgb(255 255 255 / 0.3);
+  backdrop-filter: blur(8px);
+}
+
+.glass-map-frame {
+  overflow: hidden;
+  border-radius: 0.75rem;
+  background-color: rgb(255 255 255);
+}
+
+[data-site-bg] .glass-map-frame {
+  background-color: rgb(255 255 255 / 0.92);
+}

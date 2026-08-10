@@ -1,3 +1,4 @@
+import { InnerMain } from '@/components/site-shell/InnerMain';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { fetchPageContent } from '@/lib/content-api';
@@ -35,12 +36,17 @@ export default async function AboutPage({
   const workItems = [field(c, 'workItem1'), field(c, 'workItem2'), field(c, 'workItem3')];
 
   return (
-    <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-12">
-      <h1 className="text-3xl font-bold tracking-tight text-zinc-900">
-        {field(c, 'title')}
-      </h1>
-      <p className="mt-3 text-lg text-zinc-600">{field(c, 'subtitle')}</p>
-
+    <InnerMain
+      maxWidth="3xl"
+      header={
+        <>
+          <h1 className="text-3xl font-bold tracking-tight text-zinc-900">
+            {field(c, 'title')}
+          </h1>
+          <p className="mt-3 text-lg text-zinc-600">{field(c, 'subtitle')}</p>
+        </>
+      }
+    >
       <section className="mt-10">
         <h2 className="text-xl font-semibold text-zinc-900">
           {field(c, 'missionTitle')}
@@ -81,6 +87,6 @@ export default async function AboutPage({
           </Link>
         </div>
       </section>
-    </main>
+    </InnerMain>
   );
 }

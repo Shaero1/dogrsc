@@ -1,6 +1,21 @@
 # Журнал уроков (LESSONS.md)
 <!-- Новые записи сверху. Формат: дата, суть, причина. 3–5 строк, не эссе. -->
 
+## 2026-08-10 — Агент обошёл harness
+- Что случилось: site shell + glass UI делались через Cursor TodoWrite без BRIEF/PLAN/REPORT в `tasks/`.
+- Причина: быстрый UI-итеративный цикл; harness не был первым шагом сессии.
+- Урок: нетривиальные задачи — **`python harness/new_task.py`** до кода; REPORT задним числом допустим, но BRIEF/PLAN должны существовать до merge.
+
+## 2026-08-10 — turbopack.root на monorepo
+- Что случилось: `Cannot find module 'next-intl'`, OOM admin/frontend, compile 40–58s после `turbopack.root` на корень monorepo.
+- Причина: hoisted npm workspaces + turbopack резолвит модули из root `node_modules` некорректно; весь monorepo в watch.
+- Урок: dev на **`--webpack`** или turbopack без root override; `outputFileTracingRoot` — только для production trace; не ставить turbopack.root на workspace root без проверки.
+
+## 2026-08-10 — RSC hang при мёртвой Postgres
+- Что случилось: frontend dev «висит» 30+ сек на каждой странице при P1001 / API down.
+- Причина: server `fetch` без timeout ждёт TCP до дефолтного лимита Node/OS.
+- Урок: **`serverFetch` с AbortController (~8s)** для всех SSR API calls; `dev-prepare` проверяет postgres перед migrate.
+
 ## 2026-08-02 — Docker build frontend и staging compose
 
 - Что случилось: `docker compose build frontend` падал на SSG (`fetch failed ECONNREFUSED` для `/dogs`, `/map`); staging `up` — конфликт имён контейнеров и порта `:4000`; в Dockerfile `npx prisma` тянул Prisma 7 вместо 6.

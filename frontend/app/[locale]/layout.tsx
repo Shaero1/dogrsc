@@ -4,7 +4,10 @@ import { Geist, Geist_Mono } from 'next/font/google';
 import { notFound } from 'next/navigation';
 import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
-import { fetchBranding } from '@/lib/branding-api';
+import { SiteBackground } from '@/components/site-shell/SiteBackground';
+import { SiteShellProvider } from '@/components/site-shell/SiteShellProvider';
+import { getBranding } from '@/lib/branding-api';
+import { cn } from '@/lib/cn';
 import { routing, type Locale } from '@/i18n/routing';
 import '../globals.css';
 
@@ -53,18 +56,32 @@ export default async function LocaleLayout({
 
   setRequestLocale(locale);
   const messages = await getMessages();
-  const branding = await fetchBranding();
+  const branding = await getBranding();
+  const heroImageUrl = branding?.heroImage?.url ?? null;
+  const hasBackgroundImage = Boolean(heroImageUrl);
 
   return (
     <html
       lang={locale}
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col bg-zinc-50 text-zinc-900">
+      <body
+        data-site-bg={hasBackgroundImage ? '' : undefined}
+        className={cn(
+          'relative flex min-h-full flex-col text-zinc-900',
+          hasBackgroundImage ? 'bg-zinc-900' : 'bg-zinc-50',
+        )}
+      >
         <NextIntlClientProvider messages={messages}>
-          <Header logoUrl={branding?.logo?.url ?? null} />
-          <div className="flex flex-1 flex-col">{children}</div>
-          <Footer />
+          <SiteShellProvider hasBackgroundImage={hasBackgroundImage}>
+            <SiteBackground imageUrl={heroImageUrl} />
+            <Header
+              logoUrl={branding?.logo?.url ?? null}
+              hasBackgroundImage={hasBackgroundImage}
+            />
+            <div className="flex flex-1 flex-col">{children}</div>
+            <Footer hasBackgroundImage={hasBackgroundImage} />
+          </SiteShellProvider>
         </NextIntlClientProvider>
       </body>
     </html>

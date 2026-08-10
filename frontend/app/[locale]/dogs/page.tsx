@@ -1,5 +1,6 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
+import { InnerMain } from '@/components/site-shell/InnerMain';
 import { fetchPublicDogs } from '@/lib/api';
 import type { Locale } from '@/i18n/routing';
 
@@ -26,27 +27,27 @@ export default async function DogsPage({
   const { items } = await fetchPublicDogs(locale as Locale);
 
   return (
-    <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-12">
-      <h1 className="text-3xl font-bold tracking-tight text-zinc-900">
-        {t('title')}
-      </h1>
-      <p className="mt-2 max-w-2xl text-zinc-600">{t('subtitle')}</p>
-
+    <InnerMain
+      maxWidth="6xl"
+      header={
+        <>
+          <h1 className="text-3xl font-bold tracking-tight text-zinc-900">
+            {t('title')}
+          </h1>
+          <p className="mt-2 max-w-2xl text-zinc-600">{t('subtitle')}</p>
+        </>
+      }
+    >
       {items.length === 0 ? (
-        <p className="mt-10 rounded-lg border border-zinc-200 bg-white p-8 text-zinc-600">
-          {t('empty')}
-        </p>
+        <p className="glass-empty-state">{t('empty')}</p>
       ) : (
-        <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((dog) => {
             const imageUrl = dog.media[0]?.url;
 
             return (
-              <li
-                key={dog.slug}
-                className="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm"
-              >
-                <div className="aspect-[4/3] bg-zinc-100">
+              <li key={dog.slug} className="glass-card">
+                <div className="aspect-[4/3]">
                   {imageUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -55,9 +56,7 @@ export default async function DogsPage({
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <div className="flex h-full items-center justify-center text-sm text-zinc-400">
-                      {t('noPhoto')}
-                    </div>
+                    <div className="glass-card-media-empty">{t('noPhoto')}</div>
                   )}
                 </div>
                 <div className="p-4">
@@ -84,6 +83,6 @@ export default async function DogsPage({
           })}
         </ul>
       )}
-    </main>
+    </InnerMain>
   );
 }

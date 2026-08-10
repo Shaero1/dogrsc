@@ -24,8 +24,8 @@ export function ReportListCard({
   verifiedLabel,
 }: ReportListCardProps) {
   return (
-    <li className="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm">
-      <div className="aspect-[4/3] bg-zinc-100">
+    <li className="glass-card">
+      <div className="aspect-[4/3]">
         {item.thumbnailUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -34,9 +34,7 @@ export function ReportListCard({
             className="h-full w-full object-cover"
           />
         ) : (
-          <div className="flex h-full items-center justify-center text-sm text-zinc-400">
-            {noPhotoLabel}
-          </div>
+          <div className="glass-card-media-empty">{noPhotoLabel}</div>
         )}
       </div>
       <div className="p-4">

@@ -1,5 +1,6 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
+import { InnerMain } from '@/components/site-shell/InnerMain';
 
 export default async function LostThankYouPage({
   params,
@@ -11,7 +12,7 @@ export default async function LostThankYouPage({
   const t = await getTranslations('thankYou');
 
   return (
-    <main className="mx-auto w-full max-w-2xl flex-1 px-4 py-16 text-center">
+    <InnerMain maxWidth="2xl" className="py-16 text-center">
       <h1 className="text-3xl font-bold text-zinc-900">{t('title')}</h1>
       <p className="mt-4 text-zinc-600">{t('lostMessage')}</p>
       <Link
@@ -20,6 +21,6 @@ export default async function LostThankYouPage({
       >
         {t('backHome')}
       </Link>
-    </main>
+    </InnerMain>
   );
 }

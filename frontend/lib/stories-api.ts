@@ -1,5 +1,6 @@
 import type { Locale } from '@/i18n/routing';
 import { getApiBase } from '@/lib/get-api-base';
+import { serverFetch } from '@/lib/server-fetch';
 
 export type StoryMedia = {
   id: string;
@@ -38,7 +39,7 @@ export async function fetchPublicStories(
     limit: String(limit),
   });
 
-  const res = await fetch(`${getApiBase()}/stories?${query}`, {
+  const res = await serverFetch(`${getApiBase()}/stories?${query}`, {
     headers: { 'Accept-Language': locale },
     next: { revalidate: 60 },
   });
@@ -54,7 +55,7 @@ export async function fetchPublicStoryBySlug(
   locale: Locale,
   slug: string,
 ): Promise<StoryDetail | null> {
-  const res = await fetch(
+  const res = await serverFetch(
     `${getApiBase()}/stories/${encodeURIComponent(slug)}`,
     {
       headers: { 'Accept-Language': locale },

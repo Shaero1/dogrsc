@@ -1,5 +1,9 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
+import { cn } from '@/lib/cn';
 
 const navItems = [
   { key: 'home' as const, href: '/' },
@@ -16,18 +20,52 @@ const navItems = [
 
 type HeaderProps = {
   logoUrl?: string | null;
+  hasBackgroundImage?: boolean;
 };
 
-export function Header({ logoUrl }: HeaderProps) {
+export function Header({
+  logoUrl,
+  hasBackgroundImage = false,
+}: HeaderProps) {
   const t = useTranslations('nav');
   const tSite = useTranslations('site');
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    if (!hasBackgroundImage) {
+      return;
+    }
+
+    const onScroll = () => {
+      setScrolled(window.scrollY > 80);
+    };
+
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [hasBackgroundImage]);
+
+  const glass = hasBackgroundImage && !scrolled;
+  const solidOnScroll = hasBackgroundImage && scrolled;
 
   return (
-    <header className="border-b border-zinc-200 bg-white">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-4">
+    <header
+      className={cn(
+        'sticky top-0 z-50 border-b transition-colors duration-200',
+        glass &&
+          'border-white/15 bg-white/10 text-white backdrop-blur-md',
+        solidOnScroll &&
+          'border-zinc-200 bg-white/95 text-zinc-900 shadow-sm backdrop-blur-md',
+        !hasBackgroundImage && 'border-zinc-200 bg-white text-zinc-900',
+      )}
+    >
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-3 sm:py-3.5">
         <Link
           href="/"
-          className="flex items-center gap-2 text-lg font-semibold text-amber-800"
+          className={cn(
+            'flex items-center gap-2.5 text-xl font-semibold sm:text-2xl',
+            glass ? 'text-amber-200' : 'text-amber-800',
+          )}
         >
           {logoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -39,12 +77,16 @@ export function Header({ logoUrl }: HeaderProps) {
           ) : null}
           <span>{tSite('name')}</span>
         </Link>
-        <nav className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
+        <nav className="flex flex-wrap gap-x-4 gap-y-2 text-base">
           {navItems.map(({ key, href }) => (
             <Link
               key={key}
               href={href}
-              className="text-zinc-700 hover:text-amber-800"
+              className={cn(
+                glass && 'text-white/90 hover:text-amber-200',
+                solidOnScroll && 'text-zinc-700 hover:text-amber-800',
+                !hasBackgroundImage && 'text-zinc-700 hover:text-amber-800',
+              )}
             >
               {t(key)}
             </Link>

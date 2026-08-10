@@ -1,3 +1,4 @@
+import { InnerMain } from '@/components/site-shell/InnerMain';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { fetchPageContent } from '@/lib/content-api';
@@ -41,13 +42,18 @@ export default async function FaqPage({
   const c = resolvePageFields(FAQ_FIELDS, cms, t);
 
   return (
-    <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-12">
-      <h1 className="text-3xl font-bold tracking-tight text-zinc-900">
-        {field(c, 'title')}
-      </h1>
-      <p className="mt-3 text-lg text-zinc-600">{field(c, 'subtitle')}</p>
-
-      <dl className="mt-10 space-y-8">
+    <InnerMain
+      maxWidth="3xl"
+      header={
+        <>
+          <h1 className="text-3xl font-bold tracking-tight text-zinc-900">
+            {field(c, 'title')}
+          </h1>
+          <p className="mt-3 text-lg text-zinc-600">{field(c, 'subtitle')}</p>
+        </>
+      }
+    >
+      <dl className="space-y-8">
         {FAQ_ITEMS.map((item) => (
           <div key={item.questionKey}>
             <dt className="text-lg font-semibold text-zinc-900">
@@ -58,7 +64,7 @@ export default async function FaqPage({
         ))}
       </dl>
 
-      <section className="mt-12 border-t border-zinc-100 pt-10">
+      <section className="mt-12 border-t border-zinc-200/80 pt-10">
         <Link
           href="/contact"
           className="text-sm font-medium text-amber-800 hover:underline"
@@ -66,6 +72,6 @@ export default async function FaqPage({
           {field(c, 'ctaContact')}
         </Link>
       </section>
-    </main>
+    </InnerMain>
   );
 }

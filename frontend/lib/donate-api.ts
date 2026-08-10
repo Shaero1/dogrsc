@@ -1,4 +1,5 @@
 import { getApiBase } from '@/lib/get-api-base';
+import { serverFetch } from '@/lib/server-fetch';
 
 export type CryptoAddressPublic = {
   id: string;
@@ -13,7 +14,7 @@ export type CryptoAddressesResponse = {
 
 export async function fetchCryptoAddresses(): Promise<CryptoAddressesResponse> {
   try {
-    const res = await fetch(`${getApiBase()}/donate/crypto-addresses`, {
+    const res = await serverFetch(`${getApiBase()}/donate/crypto-addresses`, {
       next: { revalidate: 300 },
     });
 

@@ -1,3 +1,4 @@
+import { InnerMain } from '@/components/site-shell/InnerMain';
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
@@ -47,27 +48,32 @@ export default async function StoryDetailPage({ params }: PageProps) {
   }
 
   return (
-    <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-12">
-      <Link
-        href="/stories"
-        className="text-sm font-medium text-amber-800 hover:underline"
-      >
-        ← {t('backToList')}
-      </Link>
+    <InnerMain
+      maxWidth="3xl"
+      header={
+        <>
+          <Link
+            href="/stories"
+            className="text-sm font-medium text-amber-800 hover:underline"
+          >
+            ← {t('backToList')}
+          </Link>
 
-      <time
-        dateTime={story.publishedAt}
-        className="mt-6 block text-xs font-medium uppercase tracking-wide text-zinc-500"
-      >
-        {formatDate(story.publishedAt, locale)}
-      </time>
+          <time
+            dateTime={story.publishedAt}
+            className="mt-6 block text-xs font-medium uppercase tracking-wide text-zinc-500"
+          >
+            {formatDate(story.publishedAt, locale)}
+          </time>
 
-      <h1 className="mt-2 text-3xl font-bold tracking-tight text-zinc-900">
-        {story.title}
-      </h1>
-
+          <h1 className="mt-2 text-3xl font-bold tracking-tight text-zinc-900">
+            {story.title}
+          </h1>
+        </>
+      }
+    >
       {story.cover ? (
-        <div className="mt-8 overflow-hidden rounded-xl border border-zinc-200">
+        <div className="overflow-hidden rounded-xl border border-zinc-200/80">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={story.cover.url}
@@ -87,6 +93,6 @@ export default async function StoryDetailPage({ params }: PageProps) {
           {t('readDogProfile')}
         </Link>
       ) : null}
-    </main>
+    </InnerMain>
   );
 }

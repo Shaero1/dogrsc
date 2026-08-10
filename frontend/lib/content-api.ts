@@ -1,4 +1,5 @@
 import { getApiBase } from './get-api-base';
+import { serverFetch } from './server-fetch';
 
 export type PageContentFields = Record<string, string>;
 
@@ -16,7 +17,7 @@ export async function fetchPageContent(
   const url = `${base}/content/pages/${encodeURIComponent(entityId)}?locale=${encodeURIComponent(locale)}`;
 
   try {
-    const res = await fetch(url, { next: { revalidate: 0 } });
+    const res = await serverFetch(url, { next: { revalidate: 0 } });
     if (!res.ok) {
       return null;
     }

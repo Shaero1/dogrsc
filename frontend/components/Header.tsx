@@ -82,6 +82,7 @@ export function Header({
             <Link
               key={key}
               href={href}
+              prefetch={false}
               className={cn(
                 glass && 'text-white/90 hover:text-amber-200',
                 solidOnScroll && 'text-zinc-700 hover:text-amber-800',

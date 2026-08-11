@@ -39,7 +39,7 @@ export async function fetchPublicDogs(
 
   const res = await serverFetch(`${getApiBase()}/dogs?${query}`, {
     headers: { 'Accept-Language': locale },
-    next: { revalidate: 60 },
+    cache: 'no-store',
   });
 
   if (!res.ok) {
@@ -55,7 +55,7 @@ export async function fetchPublicDogBySlug(
 ): Promise<PublicDog | null> {
   const res = await serverFetch(`${getApiBase()}/dogs/${encodeURIComponent(slug)}`, {
     headers: { 'Accept-Language': locale },
-    next: { revalidate: 60 },
+    cache: 'no-store',
   });
 
   if (res.status === 404) {

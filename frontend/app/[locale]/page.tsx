@@ -79,6 +79,7 @@ export default async function HomePage({
           </Link>
           <Link
             href="/dogs"
+            prefetch={false}
             className={`rounded-lg border px-5 py-2.5 text-sm font-medium hover:bg-zinc-100 ${
               hasHeroImage
                 ? 'border-white/30 bg-white/10 text-white hover:bg-white/20'

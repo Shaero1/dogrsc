@@ -1,6 +1,11 @@
 # Журнал уроков (LESSONS.md)
 <!-- Новые записи сверху. Формат: дата, суть, причина. 3–5 строк, не эссе. -->
 
+## 2026-08-11 — Presigned URL + Next.js cache после простоя
+- Что случилось: фото в карточках пропадали после 15+ мин простоя при client navigation; F5 помогал.
+- Причина: presigned S3 TTL 900s в JSON; prefetch RSC + Data Cache (`revalidate: 30–60`) хранили stale URL; после истечения подписи `<img>` → 403, `naturalWidth=0`.
+- Урок: **не кэшировать fetch с presigned URL** (`cache: 'no-store'`); **`prefetch={false}`** на nav к страницам с медиа; долгосрочно — stable proxy URL вместо presigned в JSON.
+
 ## 2026-08-11 — Home stats: safe number formatting
 - Что случилось: `RangeError: Incorrect locale information provided` в `HomeStatsSection` на Railway при `toLocaleString(locale)` с коротким тегом.
 - Причина: Alpine Node / ограниченный ICU; короткие `en`/`th`/`ru` не всегда принимаются; ошибка только когда stats включены в CMS.

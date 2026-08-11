@@ -57,7 +57,7 @@ async function parseError(res: Response): Promise<string> {
 
 export async function fetchPublicFoundReports(): Promise<PaginatedPublicReports> {
   const res = await serverFetch(`${getApiBase()}/found-reports?limit=50`, {
-    next: { revalidate: 30 },
+    cache: 'no-store',
   });
   if (!res.ok) {
     throw new Error(await parseError(res));
@@ -67,7 +67,7 @@ export async function fetchPublicFoundReports(): Promise<PaginatedPublicReports>
 
 export async function fetchPublicLostReports(): Promise<PaginatedPublicReports> {
   const res = await serverFetch(`${getApiBase()}/lost-reports?limit=50`, {
-    next: { revalidate: 30 },
+    cache: 'no-store',
   });
   if (!res.ok) {
     throw new Error(await parseError(res));

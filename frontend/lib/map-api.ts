@@ -22,7 +22,7 @@ export async function fetchMapMarkers(
 ): Promise<MapMarkersResponse> {
   const query = type === 'all' ? '' : `?type=${type}`;
   const res = await serverFetch(`${getApiBase()}/map/markers${query}`, {
-    next: { revalidate: 60 },
+    cache: 'no-store',
   });
 
   if (!res.ok) {

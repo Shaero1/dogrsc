@@ -41,7 +41,7 @@ export async function fetchPublicStories(
 
   const res = await serverFetch(`${getApiBase()}/stories?${query}`, {
     headers: { 'Accept-Language': locale },
-    next: { revalidate: 60 },
+    cache: 'no-store',
   });
 
   if (!res.ok) {
@@ -59,7 +59,7 @@ export async function fetchPublicStoryBySlug(
     `${getApiBase()}/stories/${encodeURIComponent(slug)}`,
     {
       headers: { 'Accept-Language': locale },
-      next: { revalidate: 60 },
+      cache: 'no-store',
     },
   );
 
